@@ -12,7 +12,7 @@ export const sequelize = new Sequelize({
   logging: false,
 });
 
-export const connnetDB = async () => {
+export const connectDB = async () => {
   try {
     await sequelize.authenticate();
     console.log("✅ Database connection has been established successfully.");

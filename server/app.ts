@@ -7,7 +7,7 @@ import path from "path";
 import { responseMidlleware } from "./middlewares/response.js";
 import rateLimit from "express-rate-limit";
 import { errorHandler } from "./middlewares/errorHandler.js";
-import { connnetDB } from "./config/database.js";
+import { connectDB } from "./config/database.js";
 
 const app = express();
 
@@ -40,7 +40,7 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
-  await connnetDB();
+  await connectDB();
   app.listen(PORT, () => {
     console.log(`🚀 Server is running on port ${PORT}`);
   });
