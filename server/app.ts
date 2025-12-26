@@ -4,7 +4,7 @@ import morgan from "morgan";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import path from "path";
-import { responseMidlleware } from "./middlewares/response.js";
+import { responseMiddleware } from "./middlewares/response.js";
 import rateLimit from "express-rate-limit";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import { connectDB } from "./config/database.js";
@@ -25,7 +25,7 @@ app.use(cookieParser());
 
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
-app.use(responseMidlleware);
+app.use(responseMiddleware);
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
