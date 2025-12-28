@@ -46,17 +46,25 @@ export const env = {
   db: {
     host: getEnvVar("DB_HOST", "localhost"),
     port: getEnvInt("DB_PORT", 3306),
-    name: getEnvVar("DB_NAME", "fastfood_db"),
+    name: getEnvVar("DB_NAME", "starfood_db"),
     user: getEnvVar("DB_USER", "root"),
-    password: getEnvVar("DB_PASS", ""),
+    password: getEnvVar("DB_PASS", "1qaz!QAZ"),
   },
 
   // JWT Authentication
   jwt: {
-    secret: getEnvVar("JWT_SECRET", "default_jwt_secret_change_in_production"),
+    secret: getEnvVar("JWT_SECRET", "?SXaC2i59$£["),
     expiresIn: getEnvVar("JWT_EXPIRES_IN", "1h"),
-    refreshSecret: getEnvVar("JWT_REFRESH_SECRET", "default_refresh_secret_change_in_production"),
+    refreshSecret: getEnvVar("JWT_REFRESH_SECRET", "7-(z%1E0z:/%"),
     refreshExpiresIn: getEnvVar("JWT_REFRESH_EXPIRES_IN", "7d"),
+  },
+
+  // Cookie Configuration
+  cookie: {
+    secret: getEnvVar("COOKIE_SECRET", "P6x23$H$£-4@"),
+    secure: process.env.NODE_ENV === "production",
+    sameSite: (process.env.COOKIE_SAME_SITE as "strict" | "lax" | "none") || "lax",
+    domain: getEnvVar("COOKIE_DOMAIN", ""),
   },
 
   // CORS
