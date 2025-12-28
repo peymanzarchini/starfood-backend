@@ -65,6 +65,18 @@ class AuthController {
     }
   }
 
+  async getProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user!.id;
+
+      const user = await authService.getProfile(userId);
+
+      res.success("Profile retrieved successfully", user);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async changePassword(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
