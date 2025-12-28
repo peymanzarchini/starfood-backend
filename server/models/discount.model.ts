@@ -55,7 +55,6 @@ export class Discount extends Model<InferAttributes<Discount>, InferCreationAttr
   }
 }
 
-// تعریف Validator خارج از کلاس برای دسترسی صحیح به this
 function isAfterStartValidator(this: Discount, value: Date) {
   if (this.startDate && value <= this.startDate) {
     throw new Error("Expire date must be after start date");
@@ -159,7 +158,7 @@ Discount.init(
       allowNull: false,
       validate: {
         notNull: { msg: "Expire date is required" },
-        isAfterStart: isAfterStartValidator, // استفاده از تابع خارجی
+        isAfterStart: isAfterStartValidator,
       },
     },
     isActive: {

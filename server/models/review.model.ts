@@ -17,7 +17,7 @@ import { Product } from "./product.model.js";
 export class Review extends Model<InferAttributes<Review>, InferCreationAttributes<Review>> {
   declare id: CreationOptional<number>;
   declare rating: number;
-  declare comment: CreationOptional<string | null>; // Fixed: made optional
+  declare comment: CreationOptional<string | null>;
   declare isApproved: CreationOptional<boolean>;
   declare userId: ForeignKey<User["id"]>;
   declare productId: ForeignKey<Product["id"]>;
