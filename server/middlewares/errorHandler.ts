@@ -34,7 +34,7 @@ export function errorHandler(err: unknown, req: Request, res: Response): void {
     statusCode = 409;
     message = err.errors.map((e) => e.message).join(" | ");
     res.fail(message, null, statusCode);
-    return; // ← این return اضافه شد
+    return;
   }
 
   // Handle Foreign Key Constraint Error
