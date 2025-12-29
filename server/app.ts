@@ -7,7 +7,7 @@ import path from "path";
 import rateLimit from "express-rate-limit";
 
 import { env, validateEnv } from "./config/env.js";
-import { connectDB } from "./config/database.js";
+import { closeDB, connectDB } from "./config/database.js";
 import { logger, morganStream } from "./config/logger.js";
 import { responseMiddleware } from "./middlewares/response.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
@@ -129,13 +129,15 @@ const startServer = async (): Promise<void> => {
 /**
  * Graceful Shutdown
  */
-process.on("SIGTERM", () => {
+process.on("SIGTERM", async () => {
   logger.info("SIGTERM received. Shutting down gracefully...");
+  await closeDB();
   process.exit(0);
 });
 
-process.on("SIGINT", () => {
+process.on("SIGINT", async () => {
   logger.info("SIGINT received. Shutting down gracefully...");
+  await closeDB();
   process.exit(0);
 });
 

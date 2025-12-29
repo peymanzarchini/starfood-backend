@@ -19,3 +19,13 @@ export interface RefreshResponse {
   accessToken: string;
   refreshToken: string;
 }
+
+export interface CategoryResponse {
+  id: number;
+  name: string;
+  description: string | null;
+  imageUrl: string | null;
+  displayOrder: number;
+  isActive: boolean;
+  productCount?: number;
+}
