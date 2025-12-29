@@ -105,7 +105,7 @@ Address.init(
       allowNull: true,
       validate: {
         min: { args: [-180], msg: "Longitude must be between -180 and 180" },
-        max: { args: [180], msg: "Longitude must be between -180 and 180" }, // Fixed: added max validation
+        max: { args: [180], msg: "Longitude must be between -180 and 180" },
       },
     },
     isDefault: {
