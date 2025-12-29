@@ -49,7 +49,7 @@ Category.init(
     },
     imageUrl: {
       type: DataTypes.STRING(500),
-      allowNull: true, // Fixed: changed to true (image is optional)
+      allowNull: true,
       validate: {
         isUrl: { msg: "Invalid image URL format" },
       },

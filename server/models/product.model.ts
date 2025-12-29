@@ -9,6 +9,7 @@ import {
 } from "@sequelize/core";
 import { sequelize } from "../config/database.js";
 import { Category } from "./category.model.js";
+import { ProductImage } from "./productImage.model.js";
 
 /**
  * Product Model
@@ -29,6 +30,10 @@ export class Product extends Model<InferAttributes<Product>, InferCreationAttrib
   declare categoryId: ForeignKey<Category["id"]>;
   declare readonly createdAt: CreationOptional<Date>;
   declare readonly updatedAt: CreationOptional<Date>;
+
+  // Associations
+  declare category?: NonAttribute<Category>;
+  declare images?: NonAttribute<ProductImage[]>;
 
   /**
    * Virtual field - Returns price after discount
@@ -98,6 +103,7 @@ Product.init(
         notNull: { msg: "Image URL is required" },
         isUrl: { msg: "Invalid image URL format" },
       },
+      comment: "Main product image for listings",
     },
     isAvailable: {
       type: DataTypes.BOOLEAN,
@@ -160,6 +166,7 @@ Product.init(
       { fields: ["isPopular"] },
       { fields: ["price"] },
       { fields: ["name"] },
+      { fields: ["discount"] },
     ],
   }
 );

@@ -11,6 +11,7 @@ import { Cart } from "./cart.model.js";
 import { CartItem } from "./cartItem.model.js";
 import { Favorite } from "./favorite.model.js";
 import { Settings } from "./settings.model.js";
+import { ProductImage } from "./productImage.model.js";
 
 /**
  * All models exported as a single object
@@ -28,6 +29,7 @@ const models = {
   CartItem,
   Favorite,
   Settings,
+  ProductImage,
 };
 
 // ============================================================
@@ -78,6 +80,10 @@ Discount.hasMany(Order, { foreignKey: "discountId", as: "orders" });
 Category.hasMany(Product, { foreignKey: "categoryId", as: "products" });
 Product.belongsTo(Category, { foreignKey: "categoryId", as: "category" });
 
+//Product has many Images
+Product.hasMany(ProductImage, { foreignKey: "productId", as: "images" });
+ProductImage.belongsTo(Product, { foreignKey: "productId", as: "product" });
+
 // Product has many OrderItems (one-to-many)
 Product.hasMany(OrderItem, { foreignKey: "productId", as: "orderItems" });
 OrderItem.belongsTo(Product, { foreignKey: "productId", as: "product" });
@@ -120,4 +126,5 @@ export {
   CartItem,
   Favorite,
   Settings,
+  ProductImage,
 };

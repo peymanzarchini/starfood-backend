@@ -29,3 +29,42 @@ export interface CategoryResponse {
   isActive: boolean;
   productCount?: number;
 }
+
+export interface ProductImageResponse {
+  id: number;
+  url: string;
+  thumbnailUrl: string | null;
+  altText: string | null;
+  displayOrder: number;
+}
+
+export interface ProductListResponse {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  finalPrice: number;
+  discount: number;
+  discountAmount: number;
+  imageUrl: string;
+  isAvailable: boolean;
+  isPopular: boolean;
+  preparationTime: number | null;
+  calories: number | null;
+  categoryId: number;
+}
+
+export interface ProductDetailResponse extends ProductListResponse {
+  ingredients: string[];
+  gallery: ProductImageResponse[];
+  category: {
+    id: number;
+    name: string;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// export interface ProductAdminResponse extends ProductDetailResponse {
+//   // Admin might need additional fields in future
+// }
