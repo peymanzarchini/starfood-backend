@@ -48,20 +48,20 @@ export const env = {
     port: getEnvInt("DB_PORT", 3306),
     name: getEnvVar("DB_NAME", "starfood_db"),
     user: getEnvVar("DB_USER", "root"),
-    password: getEnvVar("DB_PASS", "1qaz!QAZ"),
+    password: getEnvVar("DB_PASS"),
   },
 
   // JWT Authentication
   jwt: {
-    secret: getEnvVar("JWT_SECRET", "?SXaC2i59$£["),
+    secret: getEnvVar("JWT_SECRET"),
     expiresIn: getEnvVar("JWT_EXPIRES_IN", "1h"),
-    refreshSecret: getEnvVar("JWT_REFRESH_SECRET", "7-(z%1E0z:/%"),
+    refreshSecret: getEnvVar("JWT_REFRESH_SECRET"),
     refreshExpiresIn: getEnvVar("JWT_REFRESH_EXPIRES_IN", "7d"),
   },
 
   // Cookie Configuration
   cookie: {
-    secret: getEnvVar("COOKIE_SECRET", "P6x23$H$£-4@"),
+    secret: getEnvVar("COOKIE_SECRET"),
     secure: process.env.NODE_ENV === "production",
     sameSite: (process.env.COOKIE_SAME_SITE as "strict" | "lax" | "none") || "lax",
     domain: getEnvVar("COOKIE_DOMAIN", ""),
