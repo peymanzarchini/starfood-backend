@@ -1,6 +1,6 @@
 import { User } from "../models/index.js";
 import { LoginResponse, UserResponse } from "../types/index.js";
-import { formatUserResponse } from "../utils/formatUserResponse.js";
+import { formatUserResponse } from "../utils/format-response/formatUserResponse.js";
 import { HttpError } from "../utils/httpError.js";
 import {
   verifyRefreshToken,
