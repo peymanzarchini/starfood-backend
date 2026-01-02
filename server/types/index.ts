@@ -65,6 +65,28 @@ export interface ProductDetailResponse extends ProductListResponse {
   updatedAt: Date;
 }
 
-// export interface ProductAdminResponse extends ProductDetailResponse {
-//   // Admin might need additional fields in future
-// }
+export interface CartProductInfo {
+  id: number;
+  name: string;
+  price: number;
+  finalPrice: number;
+  discount: number;
+  imageUrl: string;
+  isAvailable: boolean;
+}
+
+export interface CartItemResponse {
+  id: number;
+  quantity: number;
+  product: CartProductInfo;
+  itemTotal: number;
+}
+
+export interface CartResponse {
+  id: number | null;
+  items: CartItemResponse[];
+  itemCount: number;
+  subtotal: number;
+  totalDiscount: number;
+  total: number;
+}

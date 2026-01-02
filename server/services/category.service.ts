@@ -4,7 +4,7 @@ import { HttpError } from "../utils/httpError.js";
 import { paginate, getOffset, PaginationOptions } from "../utils/pagination.js";
 import { CreateCategoryInput, UpdateCategoryInput } from "../validators/schemas/category.schema.js";
 import { CategoryResponse } from "../types/index.js";
-import { formatCategoryResponse } from "../utils/formatCategoryResponse.js";
+import { formatCategoryResponse } from "../utils/format-response/formatCategoryResponse.js";
 
 class CategoryService {
   async getActiveCategories(): Promise<CategoryResponse[]> {

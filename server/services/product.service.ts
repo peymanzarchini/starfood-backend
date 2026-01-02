@@ -6,7 +6,7 @@ import {
   formatProductListResponse,
   formatProductDetailResponse,
   formatProductImageResponse,
-} from "../utils/formatProductResponse.js";
+} from "../utils/format-response/formatProductResponse.js";
 import {
   ProductListResponse,
   ProductDetailResponse,
@@ -43,15 +43,10 @@ class ProductService {
     }
 
     // Price range filter
-    if (query.minPrice !== undefined || query.maxPrice !== undefined) {
-      where.price = {};
-      if (query.minPrice !== undefined) {
-        (where.price as Record<symbol, number>)[Op.gte] = query.minPrice;
-      }
-      if (query.maxPrice !== undefined) {
-        (where.price as Record<symbol, number>)[Op.lte] = query.maxPrice;
-      }
-    }
+    where.price = {
+      ...(query.minPrice !== undefined && { [Op.gte]: query.minPrice }),
+      ...(query.maxPrice !== undefined && { [Op.lte]: query.maxPrice }),
+    };
 
     // Popular filter
     if (query.isPopular !== undefined) {

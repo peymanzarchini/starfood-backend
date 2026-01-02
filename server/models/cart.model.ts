@@ -5,9 +5,11 @@ import {
   InferAttributes,
   InferCreationAttributes,
   Model,
+  NonAttribute,
 } from "@sequelize/core";
 import { sequelize } from "../config/database.js";
 import { User } from "./user.model.js";
+import { CartItem } from "./cartItem.model.js";
 
 /**
  * Cart Model
@@ -19,6 +21,9 @@ export class Cart extends Model<InferAttributes<Cart>, InferCreationAttributes<C
   declare userId: ForeignKey<User["id"]>;
   declare readonly createdAt: CreationOptional<Date>;
   declare readonly updatedAt: CreationOptional<Date>;
+
+  // Associations
+  declare items?: NonAttribute<CartItem[]>;
 }
 
 Cart.init(

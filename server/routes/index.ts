@@ -2,6 +2,7 @@ import { Router } from "express";
 import authRoutes from "./auth.routes.js";
 import categoryRoutes from "./category.routes.js";
 import productRoutes from "./product.routes.js";
+import cartRoutes from "./cart.routes.js";
 import adminRoutes from "./admin/index.js";
 
 const router = Router();
@@ -18,6 +19,9 @@ router.use("/categories", categoryRoutes);
 
 // Product routes - /api/products
 router.use("/products", productRoutes);
+
+// Cart routes - /api/cart
+router.use("/cart", cartRoutes);
 
 // Admin routes - /api/admin
 router.use("/admin", adminRoutes);
