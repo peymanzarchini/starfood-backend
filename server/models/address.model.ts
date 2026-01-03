@@ -28,6 +28,9 @@ export class Address extends Model<InferAttributes<Address>, InferCreationAttrib
   declare readonly createdAt: CreationOptional<Date>;
   declare readonly updatedAt: CreationOptional<Date>;
 
+  // Associations
+  declare user?: NonAttribute<User>;
+
   /**
    * Virtual field - Returns formatted full address
    */
