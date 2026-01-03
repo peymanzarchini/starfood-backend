@@ -4,6 +4,7 @@ import categoryRoutes from "./category.routes.js";
 import productRoutes from "./product.routes.js";
 import cartRoutes from "./cart.routes.js";
 import adminRoutes from "./admin/index.js";
+import orderRoutes from "./order.routes.js";
 
 const router = Router();
 
@@ -22,6 +23,9 @@ router.use("/products", productRoutes);
 
 // Cart routes - /api/cart
 router.use("/cart", cartRoutes);
+
+// Order routes - /api/orders
+router.use("/orders", orderRoutes);
 
 // Admin routes - /api/admin
 router.use("/admin", adminRoutes);

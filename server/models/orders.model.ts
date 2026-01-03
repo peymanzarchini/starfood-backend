@@ -5,11 +5,13 @@ import {
   InferAttributes,
   InferCreationAttributes,
   Model,
+  NonAttribute,
 } from "@sequelize/core";
 import { sequelize } from "../config/database.js";
 import { User } from "./user.model.js";
 import { Address } from "./address.model.js";
 import { Discount } from "./discount.model.js";
+import { OrderItem } from "./orderItem.model.js";
 
 /**
  * Order status types
@@ -42,6 +44,12 @@ export class Order extends Model<InferAttributes<Order>, InferCreationAttributes
   declare discountId: CreationOptional<ForeignKey<Discount["id"]> | null>;
   declare readonly createdAt: CreationOptional<Date>;
   declare readonly updatedAt: CreationOptional<Date>;
+
+  // Associations
+  declare user?: NonAttribute<User>;
+  declare address?: NonAttribute<Address>;
+  declare discount?: NonAttribute<Discount>;
+  declare items?: NonAttribute<OrderItem[]>;
 }
 
 Order.init(

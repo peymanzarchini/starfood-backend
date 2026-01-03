@@ -5,6 +5,7 @@ import {
   InferAttributes,
   InferCreationAttributes,
   Model,
+  NonAttribute,
 } from "@sequelize/core";
 import { sequelize } from "../config/database.js";
 import { Product } from "./product.model.js";
@@ -27,6 +28,10 @@ export class OrderItem extends Model<
   declare orderId: ForeignKey<Order["id"]>;
   declare productId: ForeignKey<Product["id"]>;
   declare readonly createdAt: CreationOptional<Date>;
+
+  // Associations
+  declare order?: NonAttribute<Order>;
+  declare product?: NonAttribute<Product>;
 }
 
 OrderItem.init(

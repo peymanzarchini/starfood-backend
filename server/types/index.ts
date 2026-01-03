@@ -90,3 +90,56 @@ export interface CartResponse {
   totalDiscount: number;
   total: number;
 }
+
+export interface OrderItemResponse {
+  id: number;
+  productId: number;
+  productName: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+}
+
+export interface OrderAddressResponse {
+  id: number;
+  title: string;
+  street: string;
+  city: string;
+  phoneNumber: string;
+  fullAddress: string;
+}
+
+export interface OrderListResponse {
+  id: number;
+  orderNumber: string;
+  status: string;
+  itemCount: number;
+  totalAmount: number;
+  createdAt: Date;
+}
+
+export interface OrderDetailResponse {
+  id: number;
+  orderNumber: string;
+  status: string;
+  subtotal: number;
+  discountAmount: number;
+  deliveryCost: number;
+  totalAmount: number;
+  notes: string | null;
+  estimatedDelivery: Date | null;
+  items: OrderItemResponse[];
+  address: OrderAddressResponse;
+  discountCode: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface OrderAdminResponse extends OrderDetailResponse {
+  user: {
+    id: number;
+    fullName: string;
+    email: string;
+    phoneNumber: string;
+  };
+}
