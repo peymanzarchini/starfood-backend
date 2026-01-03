@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { productController } from "../controllers/product.controller.js";
+import { reviewController } from "../controllers/review.controller.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import { getProductByIdSchema } from "../validators/schemas/product.schema.js";
 
@@ -36,5 +37,12 @@ router.get(
   validate(getProductByIdSchema),
   productController.getProductById.bind(productController)
 );
+
+/**
+ * @route   GET /api/products/:productId/reviews
+ * @desc    Get reviews for a product
+ * @access  Public
+ */
+router.get("/:productId/reviews", reviewController.getProductReviews.bind(reviewController));
 
 export default router;

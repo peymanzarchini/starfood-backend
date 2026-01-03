@@ -5,6 +5,7 @@ import {
   InferAttributes,
   InferCreationAttributes,
   Model,
+  NonAttribute,
 } from "@sequelize/core";
 import { sequelize } from "../config/database.js";
 import { User } from "./user.model.js";
@@ -23,6 +24,10 @@ export class Review extends Model<InferAttributes<Review>, InferCreationAttribut
   declare productId: ForeignKey<Product["id"]>;
   declare readonly createdAt: CreationOptional<Date>;
   declare readonly updatedAt: CreationOptional<Date>;
+
+  // Associations
+  declare user?: NonAttribute<User>;
+  declare product?: NonAttribute<Product>;
 }
 
 Review.init(

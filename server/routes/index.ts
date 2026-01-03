@@ -5,6 +5,8 @@ import productRoutes from "./product.routes.js";
 import cartRoutes from "./cart.routes.js";
 import adminRoutes from "./admin/index.js";
 import orderRoutes from "./order.routes.js";
+import addressRoutes from "./address.routes.js";
+import reviewRoutes from "./review.routes.js";
 
 const router = Router();
 
@@ -26,6 +28,12 @@ router.use("/cart", cartRoutes);
 
 // Order routes - /api/orders
 router.use("/orders", orderRoutes);
+
+// Address routes - /api/addresses
+router.use("/addresses", addressRoutes);
+
+// Review routes - /api/reviews
+router.use("/reviews", reviewRoutes);
 
 // Admin routes - /api/admin
 router.use("/admin", adminRoutes);

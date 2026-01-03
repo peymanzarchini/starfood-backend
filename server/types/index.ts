@@ -91,6 +91,21 @@ export interface CartResponse {
   total: number;
 }
 
+export interface AddressResponse {
+  id: number;
+  title: string;
+  street: string;
+  city: string;
+  postalCode: string | null;
+  phoneNumber: string;
+  latitude: number | null;
+  longitude: number | null;
+  isDefault: boolean;
+  fullAddress: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface OrderItemResponse {
   id: number;
   productId: number;
@@ -141,5 +156,50 @@ export interface OrderAdminResponse extends OrderDetailResponse {
     fullName: string;
     email: string;
     phoneNumber: string;
+  };
+}
+
+export interface ReviewUserInfo {
+  id: number;
+  firstName: string;
+  lastName: string;
+}
+
+export interface ReviewProductInfo {
+  id: number;
+  name: string;
+  imageUrl: string;
+}
+
+export interface ReviewResponse {
+  id: number;
+  rating: number;
+  comment: string | null;
+  isApproved: boolean;
+  user: ReviewUserInfo;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ReviewWithProductResponse extends ReviewResponse {
+  product: ReviewProductInfo;
+}
+
+export interface ReviewAdminResponse extends ReviewWithProductResponse {
+  user: ReviewUserInfo & { email: string };
+}
+
+export interface ProductReviewsResponse {
+  reviews: ReviewResponse[];
+  stats: {
+    averageRating: number;
+    totalReviews: number;
+    ratingDistribution: {
+      1: number;
+      2: number;
+      3: number;
+      4: number;
+      5: number;
+    };
   };
 }
