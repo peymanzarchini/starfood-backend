@@ -97,7 +97,7 @@ OrderItem.init(
   {
     sequelize,
     modelName: "OrderItem",
-    tableName: "order_items", // Fixed: was "order_item"
+    tableName: "order_items",
     updatedAt: false,
     indexes: [{ fields: ["orderId"] }, { fields: ["productId"] }],
   }

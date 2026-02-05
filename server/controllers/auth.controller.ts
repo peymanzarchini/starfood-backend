@@ -6,7 +6,13 @@ import {
   ChangePasswordInput,
   UpdateProfileInput,
 } from "../validators/schemas/auth.schema.js";
-import { clearRefreshTokenCookie, COOKIE_NAMES, setRefreshTokenCookie } from "../utils/cookie.js";
+import {
+  clearAccessTokenCookie,
+  clearRefreshTokenCookie,
+  COOKIE_NAMES,
+  setAccessTokenCookie,
+  setRefreshTokenCookie,
+} from "../utils/cookie.js";
 
 class AuthController {
   async register(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -25,6 +31,8 @@ class AuthController {
       const { user, accessToken, refreshToken } = await authService.login(data);
       setRefreshTokenCookie(res, refreshToken);
 
+      setAccessTokenCookie(res, accessToken);
+
       res.success("Login successful", {
         user,
         accessToken,
@@ -41,9 +49,8 @@ class AuthController {
         res.fail("Refresh token is required", null, 401);
         return;
       }
-      const { accessToken, refreshToken: newRefreshToken } = await authService.refreshToken(
-        refreshToken
-      );
+      const { accessToken, refreshToken: newRefreshToken } =
+        await authService.refreshToken(refreshToken);
       setRefreshTokenCookie(res, newRefreshToken);
       res.success("Token refreshed successfully", { accessToken });
     } catch (error) {
@@ -94,6 +101,7 @@ class AuthController {
 
   async logout(_req: Request, res: Response): Promise<void> {
     clearRefreshTokenCookie(res);
+    clearAccessTokenCookie(res);
     res.success("Logout successful", null);
   }
 }

@@ -8,6 +8,7 @@ import {
   Address,
   Discount,
   User,
+  Settings,
 } from "../models/index.js";
 import { sequelize } from "../config/database.js";
 import { HttpError } from "../utils/httpError.js";
@@ -20,11 +21,6 @@ import {
 import { OrderDetailResponse, OrderAdminResponse } from "../types/index.js";
 import { CreateOrderInput, UpdateOrderStatusInput } from "../validators/schemas/order.schema.js";
 import { OrderStatus } from "../models/orders.model.js";
-
-/**
- * Default delivery cost (can be moved to Settings)
- */
-const DEFAULT_DELIVERY_COST = 25000;
 
 /**
  * Valid status transitions
@@ -110,9 +106,8 @@ class OrderService {
    * Create order from cart
    */
   async createOrder(userId: number, data: CreateOrderInput): Promise<OrderDetailResponse> {
-    // Use managed transaction with callback
     const orderId = await sequelize.transaction(async (transaction) => {
-      // 1. Validate address belongs to user
+      // 1. Validate address
       const address = await Address.findOne({
         where: { id: data.addressId, userId },
         transaction,
@@ -129,12 +124,7 @@ class OrderService {
           {
             model: CartItem,
             as: "items",
-            include: [
-              {
-                model: Product,
-                as: "product",
-              },
-            ],
+            include: [{ model: Product, as: "product" }],
           },
         ],
         transaction,
@@ -144,17 +134,16 @@ class OrderService {
         throw HttpError.badRequest("Cart is empty");
       }
 
-      // 3. Validate all products are available
+      // 3. Validate availability
       const unavailableProducts: string[] = [];
       for (const item of cart.items) {
         if (!item.product?.isAvailable) {
           unavailableProducts.push(item.product?.name || "Unknown product");
         }
       }
-
       if (unavailableProducts.length > 0) {
         throw HttpError.badRequest(
-          `Some products are unavailable: ${unavailableProducts.join(", ")}`
+          `Some products are unavailable: ${unavailableProducts.join(", ")}`,
         );
       }
 
@@ -212,23 +201,31 @@ class OrderService {
 
         if (subtotal < discount.minOrderAmount) {
           throw HttpError.badRequest(
-            `Minimum order amount for this discount is ${discount.minOrderAmount}`
+            `Minimum order amount for this discount is ${discount.minOrderAmount}`,
           );
         }
 
-        // Calculate discount
-        discountAmount = this.calculateDiscountAmount(discount, subtotal);
+        // --- تغییر: استفاده از متد مدل ---
+        discountAmount = discount.calculateDiscount(subtotal);
         discountId = discount.id;
 
         // Increment usage count
         await Discount.update(
           { usedCount: discount.usedCount + 1 },
-          { where: { id: discount.id }, transaction }
+          { where: { id: discount.id }, transaction },
         );
       }
 
       // 6. Calculate final total
-      const deliveryCost = DEFAULT_DELIVERY_COST;
+      // --- تغییر: دریافت هزینه ارسال از تنظیمات ---
+      const deliverySetting = await Settings.findOne({
+        where: { key: "DELIVERY_FEE" },
+        transaction,
+      });
+
+      // اگر تنظیمی نبود، مقدار پیش‌فرض 25000 استفاده شود
+      const deliveryCost = deliverySetting ? parseFloat(deliverySetting.value) : 25000;
+
       const totalAmount = subtotal - discountAmount + deliveryCost;
 
       // 7. Create order
@@ -244,54 +241,21 @@ class OrderService {
           notes: data.notes,
           status: "pending",
         },
-        { transaction }
+        { transaction },
       );
 
-      // 8. Create order items
+      // 8. Create order items & Clear cart
       await OrderItem.bulkCreate(
-        orderItems.map((item) => ({
-          ...item,
-          orderId: order.id,
-        })),
-        { transaction }
+        orderItems.map((item) => ({ ...item, orderId: order.id })),
+        { transaction },
       );
 
-      // 9. Clear cart
-      await CartItem.destroy({
-        where: { cartId: cart.id },
-        transaction,
-      });
+      await CartItem.destroy({ where: { cartId: cart.id }, transaction });
 
-      // 10. Return order ID
       return order.id;
     });
 
-    // 11. Return created order (outside transaction)
     return this.getOrderById(orderId, userId);
-  }
-
-  /**
-   * Calculate discount amount
-   */
-  private calculateDiscountAmount(discount: Discount, orderAmount: number): number {
-    if (orderAmount < discount.minOrderAmount) {
-      return 0;
-    }
-
-    let discountValue: number;
-
-    if (discount.type === "percentage") {
-      discountValue = Math.round(orderAmount * (discount.value / 100));
-    } else {
-      discountValue = discount.value;
-    }
-
-    // Apply max discount cap if set
-    if (discount.maxDiscountAmount && discountValue > discount.maxDiscountAmount) {
-      discountValue = discount.maxDiscountAmount;
-    }
-
-    return discountValue;
   }
 
   /**
@@ -329,7 +293,7 @@ class OrderService {
       startDate?: string;
       endDate?: string;
       search?: string;
-    }
+    },
   ) {
     const { page, limit } = pagination;
     const offset = getOffset(page, limit);
@@ -422,7 +386,7 @@ class OrderService {
    */
   async updateOrderStatus(
     orderId: number,
-    data: UpdateOrderStatusInput
+    data: UpdateOrderStatusInput,
   ): Promise<OrderAdminResponse> {
     const order = await Order.findByPk(orderId);
 
@@ -443,7 +407,7 @@ class OrderService {
         status: data.status,
         estimatedDelivery: data.estimatedDelivery,
       },
-      { where: { id: orderId } }
+      { where: { id: orderId } },
     );
 
     return this.getOrderByIdAdmin(orderId);

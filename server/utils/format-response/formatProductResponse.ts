@@ -1,10 +1,10 @@
-import { Product } from "../models/product.model.js";
-import { ProductImage } from "../models/productImage.model.js";
+import { Product } from "../../models/product.model.js";
+import { ProductImage } from "../../models/productImage.model.js";
 import {
   ProductListResponse,
   ProductDetailResponse,
   ProductImageResponse,
-} from "../types/index.js";
+} from "../../types/index.js";
 
 export function formatProductImageResponse(image: ProductImage): ProductImageResponse {
   return {
