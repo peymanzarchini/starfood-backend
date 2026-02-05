@@ -7,6 +7,7 @@ import adminRoutes from "./admin/index.js";
 import orderRoutes from "./order.routes.js";
 import addressRoutes from "./address.routes.js";
 import reviewRoutes from "./review.routes.js";
+import favoritesRoutes from "./favorite.routes.js";
 
 const router = Router();
 
@@ -34,6 +35,9 @@ router.use("/addresses", addressRoutes);
 
 // Review routes - /api/reviews
 router.use("/reviews", reviewRoutes);
+
+// Favorites - /api/favorites
+router.use("/favorites", favoritesRoutes);
 
 // Admin routes - /api/admin
 router.use("/admin", adminRoutes);

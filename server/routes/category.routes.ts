@@ -9,17 +9,12 @@ router.get("/", categoryController.getActiveCategories.bind(categoryController))
 router.get(
   "/:id",
   validate(getCategoryByIdSchema),
-  categoryController.getCategoryById.bind(categoryController)
+  categoryController.getCategoryById.bind(categoryController),
 );
 router.get(
   "/:id/products",
   validate(getCategoryByIdSchema),
-  categoryController.getCategoryProducts.bind(categoryController)
-);
-router.get(
-  "/:id/products",
-  validate(getCategoryByIdSchema),
-  categoryController.getCategoryProducts.bind(categoryController)
+  categoryController.getCategoryProducts.bind(categoryController),
 );
 
 export default router;

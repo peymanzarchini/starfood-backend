@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Favorite } from "../../models/favorite.model.js";
 import { FavoriteResponse } from "../../types/index.js";
 
@@ -5,7 +6,8 @@ import { FavoriteResponse } from "../../types/index.js";
  * Format favorite for response
  */
 export function formatFavoriteResponse(favorite: Favorite): FavoriteResponse {
-  const product = favorite.product!;
+  const product = (favorite as any).product;
+
   const finalPrice =
     product.discount > 0 ? Math.round(product.price * (1 - product.discount / 100)) : product.price;
 

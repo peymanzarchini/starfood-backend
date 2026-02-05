@@ -12,6 +12,8 @@ import { logger, morganStream } from "./config/logger.js";
 import { responseMiddleware } from "./middlewares/response.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import { routes } from "./routes/index.js";
+import { swaggerSpec } from "./config/swagger.js";
+import swaggerUi from "swagger-ui-express";
 
 /**
  * Initialize Express application
@@ -33,7 +35,7 @@ app.use(
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
-  })
+  }),
 );
 
 /**
@@ -43,7 +45,7 @@ app.use(
   morgan(env.isDev ? "dev" : "combined", {
     stream: morganStream,
     skip: () => env.isTest,
-  })
+  }),
 );
 
 /**
@@ -62,6 +64,12 @@ app.use("/uploads", express.static(path.join(process.cwd(), env.upload.path)));
  * Custom Response Methods
  */
 app.use(responseMiddleware);
+
+/**
+ * Custom Response Methods
+ */
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 /**
  * Rate Limiting
@@ -119,6 +127,7 @@ const startServer = async (): Promise<void> => {
       logger.info(`🚀 Server running on port ${env.port}`);
       logger.info(`📍 Environment: ${env.nodeEnv}`);
       logger.info(`🔗 API URL: http://localhost:${env.port}/api`);
+      logger.info(`📚 Swagger Docs: http://localhost:${env.port}/api-docs`);
     });
   } catch (error) {
     logger.error("Failed to start server:", error);

@@ -1,5 +1,5 @@
-import { User } from "../models/user.model.js";
-import { UserResponse } from "../types/index.js";
+import { User } from "../../models/user.model.js";
+import { UserResponse } from "../../types/index.js";
 
 export function formatUserResponse(user: User): UserResponse {
   return {

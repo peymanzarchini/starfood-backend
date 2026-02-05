@@ -4,6 +4,7 @@ import adminCategoryRoutes from "./category.routes.js";
 import adminProductRoutes from "./product.routes.js";
 import adminOrderRoutes from "./order.routes.js";
 import adminReviewRoutes from "./review.routes.js";
+import adminSettingsRoutes from "./settings.routes.js";
 
 const router = Router();
 
@@ -16,5 +17,7 @@ router.use("/products", adminProductRoutes);
 router.use("/orders", adminOrderRoutes);
 
 router.use("/reviews", adminReviewRoutes);
+
+router.use("/settings", adminSettingsRoutes);
 
 export default router;

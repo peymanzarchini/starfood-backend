@@ -1,9 +1,9 @@
-import { Category } from "../models/category.model.js";
-import { CategoryResponse } from "../types/index.js";
+import { Category } from "../../models/index.js";
+import { CategoryResponse } from "../../types/index.js";
 
 export function formatCategoryResponse(
   category: Category,
-  productCount?: number
+  productCount?: number,
 ): CategoryResponse {
   return {
     id: category.id,
