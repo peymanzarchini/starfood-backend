@@ -25,12 +25,20 @@ export const createOrderSchema = z.object({
       .int("Address ID must be an integer")
       .positive("Address ID must be positive"),
 
+    // Fixed: Allow empty string to be converted to undefined
     discountCode: z
       .string()
       .trim()
       .toUpperCase()
-      .min(3, "Discount code must be at least 3 characters")
-      .max(50, "Discount code cannot exceed 50 characters")
+      .transform((val) => (val === "" ? undefined : val))
+      .refine(
+        (val) => val === undefined || val.length >= 3,
+        "Discount code must be at least 3 characters",
+      )
+      .refine(
+        (val) => val === undefined || val.length <= 50,
+        "Discount code cannot exceed 50 characters",
+      )
       .optional(),
 
     notes: z.string().trim().max(500, "Notes cannot exceed 500 characters").optional(),
@@ -52,7 +60,8 @@ export const updateOrderStatusSchema = z.object({
       message: "Invalid order status",
     }),
 
-    estimatedDelivery: z.iso
+    estimatedDelivery: z
+      .string()
       .datetime({ message: "Invalid datetime format" })
       .transform((val) => new Date(val))
       .optional(),
@@ -92,9 +101,9 @@ export const getOrdersSchema = z.object({
 
     status: z.enum(orderStatusValues, { message: "Invalid order status" }).optional(),
 
-    startDate: z.iso.datetime({ message: "Invalid start date format" }).optional(),
+    startDate: z.string().datetime({ message: "Invalid start date format" }).optional(),
 
-    endDate: z.iso.datetime({ message: "Invalid end date format" }).optional(),
+    endDate: z.string().datetime({ message: "Invalid end date format" }).optional(),
   }),
 });
 

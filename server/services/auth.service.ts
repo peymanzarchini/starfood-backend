@@ -45,7 +45,7 @@ class AuthService {
   }
 
   async login(data: LoginInput): Promise<LoginResponse> {
-    const user = await User.withScope("password").findOne({
+    const user = await User.withScope("withPassword").findOne({
       where: { email: data.email.toLocaleLowerCase() },
       attributes: [
         "id",

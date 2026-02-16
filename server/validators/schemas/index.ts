@@ -22,3 +22,6 @@ export * from "./address.schema.js";
 
 // Review schemas
 export * from "./review.schema.js";
+
+// Discount schemas
+export * from "./discount.schema.js";

@@ -8,6 +8,7 @@ import orderRoutes from "./order.routes.js";
 import addressRoutes from "./address.routes.js";
 import reviewRoutes from "./review.routes.js";
 import favoritesRoutes from "./favorite.routes.js";
+import discountRoutes from "./discount.routes.js";
 
 const router = Router();
 
@@ -38,6 +39,9 @@ router.use("/reviews", reviewRoutes);
 
 // Favorites - /api/favorites
 router.use("/favorites", favoritesRoutes);
+
+// Discount routes (public) - /api/discounts
+router.use("/discounts", discountRoutes);
 
 // Admin routes - /api/admin
 router.use("/admin", adminRoutes);

@@ -5,6 +5,7 @@ import adminProductRoutes from "./product.routes.js";
 import adminOrderRoutes from "./order.routes.js";
 import adminReviewRoutes from "./review.routes.js";
 import adminSettingsRoutes from "./settings.routes.js";
+import adminDiscountRoutes from "./discount.routes.js";
 
 const router = Router();
 
@@ -19,5 +20,7 @@ router.use("/orders", adminOrderRoutes);
 router.use("/reviews", adminReviewRoutes);
 
 router.use("/settings", adminSettingsRoutes);
+
+router.use("/discounts", adminDiscountRoutes);
 
 export default router;
