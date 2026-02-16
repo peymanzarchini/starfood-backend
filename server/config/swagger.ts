@@ -431,6 +431,57 @@ const options: swaggerJsdoc.Options = {
             createdAt: { type: "string", format: "date-time" },
           },
         },
+
+        // ============================================
+        // CartPreviewDiscount
+        // ============================================
+
+        CartPreviewDiscountResponse: {
+          type: "object",
+          properties: {
+            isValid: {
+              type: "boolean",
+              description: "Whether the discount code is valid for this cart",
+              example: true,
+            },
+            cart: {
+              $ref: "#/components/schemas/Cart",
+            },
+            discount: {
+              type: "object",
+              properties: {
+                code: { type: "string", example: "WELCOME20" },
+                type: { type: "string", enum: ["percentage", "fixed"], example: "percentage" },
+                value: { type: "number", example: 20 },
+              },
+            },
+            subtotal: {
+              type: "number",
+              description: "Cart total before discount (USD)",
+              example: 17,
+            },
+            discountAmount: {
+              type: "number",
+              description: "Discount amount in USD",
+              example: 3.4,
+            },
+            deliveryCost: {
+              type: "number",
+              description: "Delivery cost (0 if free delivery threshold reached)",
+              example: 0,
+            },
+            totalAfterDiscount: {
+              type: "number",
+              description: "Final amount to pay (USD)",
+              example: 13.6,
+            },
+            message: {
+              type: "string",
+              description: "Human-readable summary",
+              example: "20% discount - $3.4 off + Free delivery!",
+            },
+          },
+        },
       },
     },
     paths: {
@@ -1041,6 +1092,95 @@ const options: swaggerJsdoc.Options = {
                       },
                     ],
                   },
+                },
+              },
+            },
+          },
+        },
+      },
+
+      "/cart/preview-discount": {
+        get: {
+          tags: ["Cart"],
+          summary: "Preview discount on cart",
+          description:
+            "Check how much discount would be applied to the current cart with a given discount code",
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            {
+              name: "code",
+              in: "query",
+              required: true,
+              schema: { type: "string" },
+              description: "Discount code to preview",
+              example: "WELCOME20",
+            },
+          ],
+          responses: {
+            200: {
+              description: "Discount preview result",
+              content: {
+                "application/json": {
+                  schema: {
+                    allOf: [
+                      { $ref: "#/components/schemas/ApiResponse" },
+                      {
+                        type: "object",
+                        properties: {
+                          body: { $ref: "#/components/schemas/CartPreviewDiscountResponse" },
+                        },
+                      },
+                    ],
+                  },
+                  example: {
+                    success: true,
+                    message: "Discount preview",
+                    body: {
+                      isValid: true,
+                      cart: {
+                        id: 1,
+                        items: [
+                          {
+                            id: 1,
+                            quantity: 2,
+                            product: {
+                              id: 1,
+                              name: "Classic Burger",
+                              price: 8.5,
+                              finalPrice: 8.5,
+                              discount: 0,
+                              imageUrl: "https://example.com/burger.jpg",
+                              isAvailable: true,
+                            },
+                            itemTotal: 17,
+                          },
+                        ],
+                        itemCount: 2,
+                        subtotal: 17,
+                        totalDiscount: 0,
+                        total: 17,
+                      },
+                      discount: {
+                        code: "WELCOME20",
+                        type: "percentage",
+                        value: 20,
+                      },
+                      subtotal: 17,
+                      discountAmount: 3.4,
+                      deliveryCost: 0,
+                      totalAfterDiscount: 13.6,
+                      message: "20% discount - $3.4 off + Free delivery!",
+                    },
+                    status: 200,
+                  },
+                },
+              },
+            },
+            400: {
+              description: "Invalid discount code or empty cart",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ApiResponse" },
                 },
               },
             },

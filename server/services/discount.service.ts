@@ -6,10 +6,14 @@ import {
   CreateDiscountInput,
   UpdateDiscountInput,
   ValidateDiscountInput,
-} from "../validators/schemas/index.js";
+} from "../validators/schemas/discount.schema.js";
 import { formatDiscountResponse } from "../utils/format-response/formatDiscountResponse.js";
 import { DiscountResponse, ValidateDiscountResponse } from "../types/index.js";
 
+/**
+ * Discount Service
+ * Handles all discount business logic
+ */
 class DiscountService {
   /**
    * Get all discounts (admin)
@@ -241,7 +245,7 @@ class DiscountService {
           maxDiscountAmount: discount.maxDiscountAmount,
         },
         calculatedDiscount: 0,
-        message: `Minimum order amount for this code is ${discount.minOrderAmount.toLocaleString()} تومان`,
+        message: `Minimum order amount for this code is $${discount.minOrderAmount.toLocaleString()}`,
       };
     }
 
@@ -260,8 +264,8 @@ class DiscountService {
       calculatedDiscount,
       message:
         discount.type === "percentage"
-          ? `${discount.value}% discount applied - ${calculatedDiscount.toLocaleString()} تومان off`
-          : `${calculatedDiscount.toLocaleString()} تومان discount applied`,
+          ? `${discount.value}% discount applied - $${calculatedDiscount.toLocaleString()} off`
+          : `$${calculatedDiscount.toLocaleString()} discount applied`,
     };
   }
 

@@ -16,6 +16,14 @@ const router = Router();
 router.use(authenticate);
 
 /**
+ * @route   GET /api/cart/preview-discount
+ * @desc    Preview discount on cart
+ * @access  Private
+ */
+
+router.get("/preview-discount", cartController.previewDiscount.bind(cartController));
+
+/**
  * @route   GET /api/cart
  * @desc    Get user's cart
  * @access  Private
@@ -51,7 +59,7 @@ router.post("/items", validate(addToCartSchema), cartController.addItem.bind(car
 router.patch(
   "/items/:itemId",
   validate(updateCartItemSchema),
-  cartController.updateItemQuantity.bind(cartController)
+  cartController.updateItemQuantity.bind(cartController),
 );
 
 /**
@@ -62,7 +70,7 @@ router.patch(
 router.delete(
   "/items/:itemId",
   validate(removeCartItemSchema),
-  cartController.removeItem.bind(cartController)
+  cartController.removeItem.bind(cartController),
 );
 
 /**

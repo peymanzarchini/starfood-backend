@@ -14,6 +14,7 @@ import { errorHandler } from "./middlewares/errorHandler.js";
 import { routes } from "./routes/index.js";
 import { swaggerSpec } from "./config/swagger.js";
 import swaggerUi from "swagger-ui-express";
+import { runSeeders } from "./utils/settings.seeder.js";
 
 /**
  * Initialize Express application
@@ -121,7 +122,9 @@ const startServer = async (): Promise<void> => {
   try {
     // Connect to database
     await connectDB();
-
+    if (env.isDev) {
+      await runSeeders();
+    }
     // Start listening
     app.listen(env.port, () => {
       logger.info(`🚀 Server running on port ${env.port}`);
