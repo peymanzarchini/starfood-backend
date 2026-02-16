@@ -142,6 +142,33 @@ class CartController {
       next(error);
     }
   }
+
+  /**
+   * Preview discount on cart
+   * GET /api/cart/preview-discount?code=WELCOME20
+   */
+
+  async previewDiscount(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user!.id;
+      const { code } = req.query;
+
+      if (!code || typeof code !== "string") {
+        res.fail("Discount code is required", null, 400);
+        return;
+      }
+
+      const result = await cartService.previewDiscount(userId, code);
+
+      if (result.isValid) {
+        res.success("Discount preview", result);
+      } else {
+        res.fail(result.message, result, 400);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export const cartController = new CartController();

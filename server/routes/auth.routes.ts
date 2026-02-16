@@ -8,6 +8,12 @@ import {
   changePasswordSchema,
   updateProfileSchema,
 } from "../validators/schemas/auth.schema.js";
+import {
+  authLimiter,
+  passwordLimiter,
+  refreshLimiter,
+  registerLimiter,
+} from "../middlewares/rateLimiters.js";
 
 const router = Router();
 
@@ -16,21 +22,31 @@ const router = Router();
  * @desc    Register a new user
  * @access  Public
  */
-router.post("/register", validate(registerSchema), authController.register.bind(authController));
+router.post(
+  "/register",
+  registerLimiter,
+  validate(registerSchema),
+  authController.register.bind(authController),
+);
 
 /**
  * @route   POST /api/auth/login
  * @desc    Login user and get tokens
  * @access  Public
  */
-router.post("/login", validate(loginSchema), authController.login.bind(authController));
+router.post(
+  "/login",
+  authLimiter,
+  validate(loginSchema),
+  authController.login.bind(authController),
+);
 
 /**
  * @route   POST /api/auth/refresh
  * @desc    Refresh access token
  * @access  Public
  */
-router.post("/refresh", authController.refreshToken.bind(authController));
+router.post("/refresh", refreshLimiter, authController.refreshToken.bind(authController));
 
 /**
  * @route   POST /api/auth/logout
@@ -55,7 +71,7 @@ router.patch(
   "/profile",
   authenticate,
   validate(updateProfileSchema),
-  authController.updateProfile.bind(authController)
+  authController.updateProfile.bind(authController),
 );
 
 /**
@@ -66,8 +82,9 @@ router.patch(
 router.post(
   "/change-password",
   authenticate,
+  passwordLimiter,
   validate(changePasswordSchema),
-  authController.changePassword.bind(authController)
+  authController.changePassword.bind(authController),
 );
 
 export default router;

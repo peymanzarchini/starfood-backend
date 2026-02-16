@@ -1,4 +1,4 @@
-import { Cart, CartItem, Product } from "../models/index.js";
+import { Cart, CartItem, Discount, Product, Settings } from "../models/index.js";
 import { HttpError } from "../utils/httpError.js";
 import {
   formatCartResponse,
@@ -6,6 +6,7 @@ import {
 } from "../utils/format-response/formatCartResponse.js";
 import { CartResponse } from "../types/index.js";
 import { AddToCartInput, UpdateCartItemInput } from "../validators/schemas/cart.schema.js";
+import { Op } from "@sequelize/core";
 
 class CartService {
   /**
@@ -102,7 +103,7 @@ class CartService {
   async updateItemQuantity(
     userId: number,
     itemId: number,
-    data: UpdateCartItemInput
+    data: UpdateCartItemInput,
   ): Promise<CartResponse> {
     const cart = await Cart.findOne({ where: { userId } });
 
@@ -245,6 +246,142 @@ class CartService {
     }
 
     return this.getCart(userId);
+  }
+
+  async previewDiscount(
+    userId: number,
+    discountCode: string,
+  ): Promise<{
+    isValid: boolean;
+    cart: CartResponse;
+    discount: {
+      code: string;
+      type: "percentage" | "fixed";
+      value: number;
+    };
+    subtotal: number;
+    discountAmount: number;
+    deliveryCost: number;
+    totalAfterDiscount: number;
+    message: string;
+  }> {
+    const cart = await this.getCartWithItems(userId);
+
+    if (!cart || !cart.items || cart.items.length === 0) {
+      throw HttpError.badRequest("Your shopping cart is empty.");
+    }
+
+    //Calculate cart total
+    const cartResponse = formatCartResponse(cart);
+    const subtotal = cartResponse.total;
+
+    // Validate discount code using discount service
+    const discount = await Discount.findOne({
+      where: {
+        code: discountCode.toUpperCase(),
+        isActive: true,
+        startDate: { [Op.lte]: new Date() },
+        expireDate: { [Op.gte]: new Date() },
+      },
+    });
+
+    if (!discount) {
+      return {
+        isValid: false,
+        cart: cartResponse,
+        discount: {
+          code: discountCode.toUpperCase(),
+          type: "percentage",
+          value: 0,
+        },
+        subtotal,
+        discountAmount: 0,
+        deliveryCost: 0,
+        totalAfterDiscount: subtotal,
+        message: "The discount code is invalid or expired.",
+      };
+    }
+
+    // Check usage limit
+    if (discount.usedCount >= discount.usageLimit) {
+      return {
+        isValid: false,
+        cart: cartResponse,
+        discount: {
+          code: discount.code,
+          type: discount.type,
+          value: discount.value,
+        },
+        subtotal,
+        discountAmount: 0,
+        deliveryCost: 0,
+        totalAfterDiscount: subtotal,
+        message: "This discount code has reached its usage limit.",
+      };
+    }
+
+    // Check minimum order amount
+    if (subtotal < discount.minOrderAmount) {
+      return {
+        isValid: false,
+        cart: cartResponse,
+        discount: {
+          code: discount.code,
+          type: discount.type,
+          value: discount.value,
+        },
+        subtotal,
+        discountAmount: 0,
+        deliveryCost: 0,
+        totalAfterDiscount: subtotal,
+        message: `The minimum order amount for this discount code is ${discount.minOrderAmount.toLocaleString()}$`,
+      };
+    }
+
+    // Calculate discount
+    const discountAmount = discount.calculateDiscount(subtotal);
+
+    // Get delivery cost from settings
+    const deliverySetting = await Settings.findOne({
+      where: { key: "DELIVERY_FEE" },
+    });
+
+    const deliveryCost = deliverySetting ? parseFloat(deliverySetting.value) : 25000;
+
+    //Check free delivery thereshold
+    const freeDeliveryThreshold = await Settings.findOne({
+      where: { key: "FREE_DELIVERY_THRESHOLD" },
+    });
+    const threshold = freeDeliveryThreshold ? parseFloat(freeDeliveryThreshold.value) : 200000;
+
+    const finalDeliveryCost = subtotal >= threshold ? 0 : deliveryCost;
+    const totalAfterDiscount = subtotal - discountAmount + finalDeliveryCost;
+
+    let message = "";
+    if (discount.type === "percentage") {
+      message = `${discount.value}% discount - $${discountAmount.toLocaleString()} off`;
+    } else {
+      message = `$${discountAmount.toLocaleString()} discount applied`;
+    }
+
+    if (finalDeliveryCost === 0) {
+      message += " + Free delivery!";
+    }
+
+    return {
+      isValid: true,
+      cart: cartResponse,
+      discount: {
+        code: discount.code,
+        type: discount.type,
+        value: discount.value,
+      },
+      subtotal,
+      discountAmount,
+      deliveryCost: finalDeliveryCost,
+      totalAfterDiscount,
+      message,
+    };
   }
 }
 
