@@ -205,7 +205,6 @@ class OrderService {
           );
         }
 
-        // --- تغییر: استفاده از متد مدل ---
         discountAmount = discount.calculateDiscount(subtotal);
         discountId = discount.id;
 
@@ -217,13 +216,11 @@ class OrderService {
       }
 
       // 6. Calculate final total
-      // --- تغییر: دریافت هزینه ارسال از تنظیمات ---
       const deliverySetting = await Settings.findOne({
         where: { key: "DELIVERY_FEE" },
         transaction,
       });
 
-      // اگر تنظیمی نبود، مقدار پیش‌فرض 25000 استفاده شود
       const deliveryCost = deliverySetting ? parseFloat(deliverySetting.value) : 25000;
 
       const totalAmount = subtotal - discountAmount + deliveryCost;

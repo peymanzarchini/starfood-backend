@@ -218,3 +218,33 @@ export interface FavoriteResponse {
   };
   createdAt: Date;
 }
+
+export interface DiscountResponse {
+  id: number;
+  code: string;
+  type: "percentage" | "fixed";
+  value: number;
+  minOrderAmount: number;
+  maxDiscountAmount: number | null;
+  usageLimit: number;
+  usedCount: number;
+  startDate: Date;
+  expireDate: Date;
+  isActive: boolean;
+  isValid: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ValidateDiscountResponse {
+  isValid: boolean;
+  discount: {
+    code: string;
+    type: "percentage" | "fixed";
+    value: number;
+    minOrderAmount: number;
+    maxDiscountAmount: number | null;
+  };
+  calculatedDiscount: number;
+  message: string;
+}
