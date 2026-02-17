@@ -41,6 +41,18 @@ const VALID_STATUS_TRANSITIONS: Record<string, OrderStatus[]> = {
  */
 class OrderService {
   /**
+   * Generate unique order number
+   */
+  private generateOrderNumber(): string {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const random = String(Math.floor(Math.random() * 10000)).padStart(4, "0");
+    return `ORD-${year}${month}${day}-${random}`;
+  }
+
+  /**
    * Get user's orders
    */
   async getUserOrders(userId: number, pagination: PaginationOptions, status?: OrderStatus) {
@@ -221,7 +233,7 @@ class OrderService {
         transaction,
       });
 
-      const deliveryCost = deliverySetting ? parseFloat(deliverySetting.value) : 25000;
+      const deliveryCost = deliverySetting ? parseFloat(deliverySetting.value) : 5;
 
       const totalAmount = subtotal - discountAmount + deliveryCost;
 
@@ -237,6 +249,7 @@ class OrderService {
           totalAmount,
           notes: data.notes,
           status: "pending",
+          orderNumber: this.generateOrderNumber(),
         },
         { transaction },
       );

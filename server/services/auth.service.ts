@@ -147,7 +147,7 @@ class AuthService {
   }
 
   async changePassword(userId: number, data: ChangePasswordInput): Promise<void> {
-    const user = await User.withScope("password").findByPk(userId, {
+    const user = await User.withScope("withPassword").findByPk(userId, {
       attributes: ["id", "password"],
     });
 

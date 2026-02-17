@@ -124,7 +124,7 @@ Order.init(
         "ready",
         "delivering",
         "delivered",
-        "cancelled"
+        "cancelled",
       ),
       allowNull: false,
       defaultValue: "pending",
@@ -162,20 +162,6 @@ Order.init(
     sequelize,
     modelName: "Order",
     tableName: "orders",
-    hooks: {
-      /**
-       * Generate unique order number before creating order
-       * Format: ORD-YYYYMMDD-XXXX (e.g., ORD-20240115-0001)
-       */
-      beforeCreate: async (order: Order) => {
-        const date = new Date();
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const day = String(date.getDate()).padStart(2, "0");
-        const random = String(Math.floor(Math.random() * 10000)).padStart(4, "0");
-        order.orderNumber = `ORD-${year}${month}${day}-${random}`;
-      },
-    },
     indexes: [
       { fields: ["userId"] },
       { fields: ["status"] },
@@ -183,5 +169,5 @@ Order.init(
       { fields: ["orderNumber"], unique: true },
       { fields: ["addressId"] },
     ],
-  }
+  },
 );
