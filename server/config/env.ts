@@ -68,7 +68,7 @@ export const env = {
   },
 
   // CORS
-  clientUrl: getEnvVar("CLIENT_URL", "http://localhost:3000"),
+  clientUrl: getEnvVar("CLIENT_URL", "http://localhost:5173"),
 
   // File Upload
   upload: {
@@ -100,7 +100,7 @@ export function validateEnv(): void {
 
     if (missing.length > 0) {
       throw new Error(
-        `Missing required environment variables in production: ${missing.join(", ")}`
+        `Missing required environment variables in production: ${missing.join(", ")}`,
       );
     }
 
