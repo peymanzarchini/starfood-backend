@@ -13,7 +13,7 @@ export const sequelize = new Sequelize({
   database: env.db.name,
   user: env.db.user,
   password: env.db.password,
-  logging: env.isDev ? (msg) => logger.debug(msg) : false,
+  logging: false,
   pool: {
     max: 10, // Maximum number of connections in pool
     min: 0, // Minimum number of connections in pool
