@@ -1,8 +1,8 @@
 import rateLimit from "express-rate-limit";
 
 export const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, //15 minutes
-  max: 5, // 5 requests per window
+  windowMs: 15 * 60 * 1000,
+  max: 5,
   message: {
     success: false,
     message: "Too many login attempts. Please try again in 15 minutes.",
@@ -10,12 +10,12 @@ export const authLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  // Use IP + email as key to prevent one IP from blocking another user
+  validate: { xForwardedForHeader: false, default: false },
   keyGenerator: (req) => {
     const email = req.body?.email || "";
     return `${req.ip}-${email}`;
   },
-  skipSuccessfulRequests: true, // Don't count successful logins
+  skipSuccessfulRequests: true,
 });
 
 /**
