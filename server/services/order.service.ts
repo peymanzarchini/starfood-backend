@@ -22,9 +22,6 @@ import { OrderDetailResponse, OrderAdminResponse } from "../types/index.js";
 import { CreateOrderInput, UpdateOrderStatusInput } from "../validators/schemas/order.schema.js";
 import { OrderStatus } from "../models/orders.model.js";
 
-/**
- * Valid status transitions
- */
 const VALID_STATUS_TRANSITIONS: Record<string, OrderStatus[]> = {
   pending: ["confirmed", "cancelled"],
   confirmed: ["preparing", "cancelled"],
@@ -35,14 +32,7 @@ const VALID_STATUS_TRANSITIONS: Record<string, OrderStatus[]> = {
   cancelled: [],
 };
 
-/**
- * Order Service
- * Handles all order business logic
- */
 class OrderService {
-  /**
-   * Generate unique order number
-   */
   private generateOrderNumber(): string {
     const date = new Date();
     const year = date.getFullYear();
@@ -52,9 +42,6 @@ class OrderService {
     return `ORD-${year}${month}${day}-${random}`;
   }
 
-  /**
-   * Get user's orders
-   */
   async getUserOrders(userId: number, pagination: PaginationOptions, status?: OrderStatus) {
     const { page, limit } = pagination;
     const offset = getOffset(page, limit);
@@ -84,9 +71,6 @@ class OrderService {
     return paginate(orders, count, page, limit);
   }
 
-  /**
-   * Get order by ID for user
-   */
   async getOrderById(orderId: number, userId: number): Promise<OrderDetailResponse> {
     const order = await Order.findOne({
       where: { id: orderId, userId },
@@ -114,9 +98,6 @@ class OrderService {
     return formatOrderDetailResponse(order);
   }
 
-  /**
-   * Create order from cart
-   */
   async createOrder(userId: number, data: CreateOrderInput): Promise<OrderDetailResponse> {
     const orderId = await sequelize.transaction(async (transaction) => {
       // 1. Validate address
@@ -268,9 +249,6 @@ class OrderService {
     return this.getOrderById(orderId, userId);
   }
 
-  /**
-   * Cancel order (user can only cancel pending orders)
-   */
   async cancelOrder(orderId: number, userId: number): Promise<OrderDetailResponse> {
     const order = await Order.findOne({
       where: { id: orderId, userId },
@@ -289,13 +267,6 @@ class OrderService {
     return this.getOrderById(orderId, userId);
   }
 
-  // ============================================================
-  // ADMIN METHODS
-  // ============================================================
-
-  /**
-   * Get all orders (admin)
-   */
   async getAllOrdersAdmin(
     pagination: PaginationOptions,
     filters?: {
@@ -357,9 +328,6 @@ class OrderService {
     return paginate(orders, count, page, limit);
   }
 
-  /**
-   * Get order by ID (admin)
-   */
   async getOrderByIdAdmin(orderId: number): Promise<OrderAdminResponse> {
     const order = await Order.findByPk(orderId, {
       include: [
@@ -391,9 +359,6 @@ class OrderService {
     return formatOrderAdminResponse(order);
   }
 
-  /**
-   * Update order status (admin)
-   */
   async updateOrderStatus(
     orderId: number,
     data: UpdateOrderStatusInput,
@@ -423,9 +388,6 @@ class OrderService {
     return this.getOrderByIdAdmin(orderId);
   }
 
-  /**
-   * Get order statistics (admin)
-   */
   async getOrderStats(): Promise<{
     total: number;
     pending: number;
@@ -452,7 +414,6 @@ class OrderService {
         Order.count({ where: { createdAt: { [Op.gte]: today } } }),
       ]);
 
-    // Calculate today's revenue
     const todayRevenueResult = await Order.sum("totalAmount", {
       where: {
         createdAt: { [Op.gte]: today },

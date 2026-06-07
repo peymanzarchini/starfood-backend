@@ -17,11 +17,6 @@ import {
 
 const router = Router();
 
-/**
- * @route   POST /api/auth/register
- * @desc    Register a new user
- * @access  Public
- */
 router.post(
   "/register",
   registerLimiter,
@@ -29,11 +24,6 @@ router.post(
   authController.register.bind(authController),
 );
 
-/**
- * @route   POST /api/auth/login
- * @desc    Login user and get tokens
- * @access  Public
- */
 router.post(
   "/login",
   authLimiter,
@@ -41,32 +31,12 @@ router.post(
   authController.login.bind(authController),
 );
 
-/**
- * @route   POST /api/auth/refresh
- * @desc    Refresh access token
- * @access  Public
- */
 router.post("/refresh", refreshLimiter, authController.refreshToken.bind(authController));
 
-/**
- * @route   POST /api/auth/logout
- * @desc    Logout user
- * @access  Private
- */
 router.post("/logout", authenticate, authController.logout.bind(authController));
 
-/**
- * @route   GET /api/auth/profile
- * @desc    Get current user profile
- * @access  Private
- */
 router.get("/profile", authenticate, authController.getProfile.bind(authController));
 
-/**
- * @route   PATCH /api/auth/profile
- * @desc    Update current user profile
- * @access  Private
- */
 router.patch(
   "/profile",
   authenticate,
@@ -74,11 +44,6 @@ router.patch(
   authController.updateProfile.bind(authController),
 );
 
-/**
- * @route   POST /api/auth/change-password
- * @desc    Change user password
- * @access  Private
- */
 router.post(
   "/change-password",
   authenticate,

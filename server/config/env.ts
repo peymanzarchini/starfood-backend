@@ -1,14 +1,5 @@
 import "dotenv/config";
 
-/**
- * Environment variable validation and configuration
- * Centralizes all environment variables with type safety
- */
-
-/**
- * Get required environment variable
- * Throws error if not defined in production
- */
 function getEnvVar(key: string, defaultValue?: string): string {
   const value = process.env[key] || defaultValue;
 
@@ -19,9 +10,6 @@ function getEnvVar(key: string, defaultValue?: string): string {
   return value || "";
 }
 
-/**
- * Parse integer from environment variable
- */
 function getEnvInt(key: string, defaultValue: number): number {
   const value = process.env[key];
   if (!value) return defaultValue;
@@ -34,15 +22,10 @@ function getEnvInt(key: string, defaultValue: number): number {
   return parsed;
 }
 
-/**
- * Application environment configuration
- */
 export const env = {
-  // Application
   nodeEnv: getEnvVar("NODE_ENV", "development"),
   port: getEnvInt("PORT", 3000),
 
-  // Database
   db: {
     host: getEnvVar("DB_HOST", "localhost"),
     port: getEnvInt("DB_PORT", 3306),
@@ -51,7 +34,6 @@ export const env = {
     password: getEnvVar("DB_PASS"),
   },
 
-  // JWT Authentication
   jwt: {
     secret: getEnvVar("JWT_SECRET"),
     expiresIn: getEnvVar("JWT_EXPIRES_IN", "1h"),
@@ -59,7 +41,6 @@ export const env = {
     refreshExpiresIn: getEnvVar("JWT_REFRESH_EXPIRES_IN", "7d"),
   },
 
-  // Cookie Configuration
   cookie: {
     secret: getEnvVar("COOKIE_SECRET"),
     secure: process.env.NODE_ENV === "production",
@@ -67,31 +48,24 @@ export const env = {
     domain: getEnvVar("COOKIE_DOMAIN", ""),
   },
 
-  // CORS
   clientUrl: getEnvVar("CLIENT_URL", "http://localhost:5173"),
 
-  // File Upload
   upload: {
     maxFileSize: getEnvInt("MAX_FILE_SIZE", 5 * 1024 * 1024), // 5MB
     allowedMimeTypes: ["image/jpeg", "image/png", "image/webp"],
     path: getEnvVar("UPLOAD_PATH", "uploads"),
   },
 
-  // Rate Limiting
   rateLimit: {
     windowMs: getEnvInt("RATE_LIMIT_WINDOW_MS", 15 * 60 * 1000), // 15 minutes
     maxRequests: getEnvInt("RATE_LIMIT_MAX_REQUESTS", 100),
   },
 
-  // Environment flags
   isDev: process.env.NODE_ENV === "development",
   isProd: process.env.NODE_ENV === "production",
   isTest: process.env.NODE_ENV === "test",
 } as const;
 
-/**
- * Validate critical environment variables in production
- */
 export function validateEnv(): void {
   if (env.isProd) {
     const requiredVars = ["JWT_SECRET", "JWT_REFRESH_SECRET", "DB_HOST", "DB_NAME", "DB_USER"];
@@ -104,7 +78,6 @@ export function validateEnv(): void {
       );
     }
 
-    // Warn about default secrets
     if (env.jwt.secret.includes("default")) {
       console.warn("⚠️ WARNING: Using default JWT secret in production!");
     }

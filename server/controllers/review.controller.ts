@@ -3,19 +3,7 @@ import { reviewService } from "../services/review.service.js";
 import { normalizePagination } from "../utils/pagination.js";
 import { CreateReviewInput, UpdateReviewInput } from "../validators/schemas/review.schema.js";
 
-/**
- * Review Controller
- * Handles HTTP requests for reviews
- */
 class ReviewController {
-  // ============================================================
-  // PUBLIC ENDPOINTS
-  // ============================================================
-
-  /**
-   * Get reviews for a product
-   * GET /api/products/:productId/reviews
-   */
   async getProductReviews(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const productId = parseInt(req.params.productId, 10);
@@ -29,14 +17,6 @@ class ReviewController {
     }
   }
 
-  // ============================================================
-  // USER ENDPOINTS
-  // ============================================================
-
-  /**
-   * Get current user's reviews
-   * GET /api/reviews/my
-   */
   async getMyReviews(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -50,10 +30,6 @@ class ReviewController {
     }
   }
 
-  /**
-   * Create review
-   * POST /api/reviews
-   */
   async createReview(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -67,10 +43,6 @@ class ReviewController {
     }
   }
 
-  /**
-   * Update review
-   * PUT /api/reviews/:id
-   */
   async updateReview(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -85,10 +57,6 @@ class ReviewController {
     }
   }
 
-  /**
-   * Delete review
-   * DELETE /api/reviews/:id
-   */
   async deleteReview(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -102,10 +70,6 @@ class ReviewController {
     }
   }
 
-  /**
-   * Check if user can review a product
-   * GET /api/reviews/can-review/:productId
-   */
   async canReview(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -119,14 +83,6 @@ class ReviewController {
     }
   }
 
-  // ============================================================
-  // ADMIN ENDPOINTS
-  // ============================================================
-
-  /**
-   * Get all reviews (admin)
-   * GET /api/admin/reviews
-   */
   async getAllReviewsAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const pagination = normalizePagination(Number(req.query.page), Number(req.query.limit));
@@ -136,8 +92,8 @@ class ReviewController {
           req.query.isApproved === "true"
             ? true
             : req.query.isApproved === "false"
-            ? false
-            : undefined,
+              ? false
+              : undefined,
         productId: req.query.productId ? Number(req.query.productId) : undefined,
         rating: req.query.rating ? Number(req.query.rating) : undefined,
       };
@@ -150,10 +106,6 @@ class ReviewController {
     }
   }
 
-  /**
-   * Get review by ID (admin)
-   * GET /api/admin/reviews/:id
-   */
   async getReviewByIdAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const reviewId = parseInt(req.params.id, 10);
@@ -166,10 +118,6 @@ class ReviewController {
     }
   }
 
-  /**
-   * Approve or reject review (admin)
-   * PATCH /api/admin/reviews/:id/approval
-   */
   async setReviewApproval(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const reviewId = parseInt(req.params.id, 10);
@@ -190,10 +138,6 @@ class ReviewController {
     }
   }
 
-  /**
-   * Delete review (admin)
-   * DELETE /api/admin/reviews/:id
-   */
   async deleteReviewAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const reviewId = parseInt(req.params.id, 10);
@@ -206,10 +150,6 @@ class ReviewController {
     }
   }
 
-  /**
-   * Get review statistics (admin)
-   * GET /api/admin/reviews/stats
-   */
   async getReviewStats(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const stats = await reviewService.getReviewStats();
@@ -220,10 +160,6 @@ class ReviewController {
     }
   }
 
-  /**
-   * Bulk approve reviews (admin)
-   * POST /api/admin/reviews/bulk-approve
-   */
   async bulkApproveReviews(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { reviewIds } = req.body;
@@ -243,10 +179,6 @@ class ReviewController {
     }
   }
 
-  /**
-   * Bulk delete reviews (admin)
-   * POST /api/admin/reviews/bulk-delete
-   */
   async bulkDeleteReviews(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { reviewIds } = req.body;

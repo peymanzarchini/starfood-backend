@@ -8,15 +8,6 @@ import {
 } from "../validators/schemas/index.js";
 
 class DiscountController {
-  // ============================================================
-  // ADMIN ENDPOINTS
-  // ============================================================
-
-  /**
-   * Get all discounts
-   * GET /api/admin/discounts
-   */
-
   async getAllDiscounts(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const pagination = normalizePagination(Number(req.query.page), Number(req.query.limit));
@@ -32,11 +23,6 @@ class DiscountController {
     }
   }
 
-  /**
-   * Get discount by ID
-   * GET /api/admin/discounts/:id
-   */
-
   async getDiscountById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const discountId = parseInt(req.params.id, 10);
@@ -47,10 +33,6 @@ class DiscountController {
     }
   }
 
-  /**
-   * Create discount
-   * POST /api/admin/discounts
-   */
   async createDiscount(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const data: CreateDiscountInput = req.body;
@@ -63,10 +45,6 @@ class DiscountController {
     }
   }
 
-  /**
-   * Update discount
-   * PUT /api/admin/discounts/:id
-   */
   async updateDiscount(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const discountId = parseInt(req.params.id, 10);
@@ -80,10 +58,6 @@ class DiscountController {
     }
   }
 
-  /**
-   * Delete discount
-   * DELETE /api/admin/discounts/:id
-   */
   async deleteDiscount(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const discountId = parseInt(req.params.id, 10);
@@ -96,10 +70,6 @@ class DiscountController {
     }
   }
 
-  /**
-   * Toggle discount active status
-   * PATCH /api/admin/discounts/:id/toggle
-   */
   async toggleDiscountStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const discountId = parseInt(req.params.id, 10);
@@ -116,10 +86,6 @@ class DiscountController {
     }
   }
 
-  /**
-   * Get discount statistics
-   * GET /api/admin/discounts/stats
-   */
   async getDiscountStats(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const stats = await discountService.getDiscountStats();
@@ -130,14 +96,6 @@ class DiscountController {
     }
   }
 
-  // ============================================================
-  // PUBLIC ENDPOINTS
-  // ============================================================
-
-  /**
-   * Validate discount code
-   * POST /api/discounts/validate
-   */
   async validateDiscount(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const data: ValidateDiscountInput = req.body;

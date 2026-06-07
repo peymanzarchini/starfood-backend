@@ -3,9 +3,6 @@ import { MySqlDialect } from "@sequelize/mysql";
 import { env } from "./env.js";
 import { logger } from "./logger.js";
 
-/**
- * Sequelize database instance configuration
- */
 export const sequelize = new Sequelize({
   dialect: MySqlDialect,
   host: env.db.host,
@@ -15,28 +12,22 @@ export const sequelize = new Sequelize({
   password: env.db.password,
   logging: false,
   pool: {
-    max: 10, // Maximum number of connections in pool
-    min: 0, // Minimum number of connections in pool
-    acquire: 30000, // Maximum time (ms) to acquire connection
-    idle: 10000, // Maximum time (ms) connection can be idle
+    max: 10,
+    min: 0,
+    acquire: 30000,
+    idle: 10000,
   },
   define: {
-    underscored: false, // Use camelCase for auto-generated fields
-    freezeTableName: true, // Prevent Sequelize from pluralizing table names
+    underscored: false,
+    freezeTableName: true,
   },
 });
 
-/**
- * Connect to database and sync models
- * @throws Error if connection fails
- */
 export async function connectDB(): Promise<void> {
   try {
-    // Test connection
     await sequelize.authenticate();
     logger.info("✅ Database connection established successfully");
 
-    // Sync models in development
     if (env.isDev) {
       await sequelize.sync({ alter: true });
       logger.info("🔄 Database synchronized (development mode)");
@@ -47,9 +38,6 @@ export async function connectDB(): Promise<void> {
   }
 }
 
-/**
- * Close database connection gracefully
- */
 export async function closeDB(): Promise<void> {
   try {
     await sequelize.close();

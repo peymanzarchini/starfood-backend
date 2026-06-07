@@ -4,7 +4,9 @@
   "type": "module",
   "main": "dist/app.js",
   "scripts": {
-    "start": "tsx watch server/app.ts"
+    "dev": "node --watch dist/app.js",
+    "start": "node server/app.js",
+    "build": "rimraf dist && tsc --watch"
   },
   "keywords": [],
   "author": "",

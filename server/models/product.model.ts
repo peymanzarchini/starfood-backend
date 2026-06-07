@@ -11,10 +11,6 @@ import { sequelize } from "../config/database.js";
 import { Category } from "./category.model.js";
 import { ProductImage } from "./productImage.model.js";
 
-/**
- * Product Model
- * Represents food items available for order
- */
 export class Product extends Model<InferAttributes<Product>, InferCreationAttributes<Product>> {
   declare id: CreationOptional<number>;
   declare name: string;
@@ -31,13 +27,9 @@ export class Product extends Model<InferAttributes<Product>, InferCreationAttrib
   declare readonly createdAt: CreationOptional<Date>;
   declare readonly updatedAt: CreationOptional<Date>;
 
-  // Associations
   declare category?: NonAttribute<Category>;
   declare images?: NonAttribute<ProductImage[]>;
 
-  /**
-   * Virtual field - Returns price after discount
-   */
   get finalPrice(): NonAttribute<number> {
     if (this.discount && this.discount > 0) {
       return Math.round(this.price * (1 - this.discount / 100));
@@ -45,9 +37,6 @@ export class Product extends Model<InferAttributes<Product>, InferCreationAttrib
     return this.price;
   }
 
-  /**
-   * Virtual field - Returns discount amount in currency
-   */
   get discountAmount(): NonAttribute<number> {
     if (this.discount && this.discount > 0) {
       return Math.round(this.price * (this.discount / 100));
@@ -168,5 +157,5 @@ Product.init(
       { fields: ["name"] },
       { fields: ["discount"] },
     ],
-  }
+  },
 );

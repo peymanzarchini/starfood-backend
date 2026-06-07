@@ -61,7 +61,7 @@ class AuthService {
     });
 
     if (!user) {
-      throw HttpError.unauthorized("Invalid email or password");
+      throw HttpError.notFound("User not found");
     }
 
     const isPasswordValid = await user.validPassword(data.password);

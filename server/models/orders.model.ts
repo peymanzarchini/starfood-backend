@@ -13,9 +13,6 @@ import { Address } from "./address.model.js";
 import { Discount } from "./discount.model.js";
 import { OrderItem } from "./orderItem.model.js";
 
-/**
- * Order status types
- */
 export type OrderStatus =
   | "pending"
   | "confirmed"
@@ -25,10 +22,6 @@ export type OrderStatus =
   | "delivered"
   | "cancelled";
 
-/**
- * Order Model
- * Represents a customer's order
- */
 export class Order extends Model<InferAttributes<Order>, InferCreationAttributes<Order>> {
   declare id: CreationOptional<number>;
   declare orderNumber: CreationOptional<string>;

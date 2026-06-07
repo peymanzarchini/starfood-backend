@@ -7,10 +7,6 @@ import {
 } from "@sequelize/core";
 import { sequelize } from "../config/database.js";
 
-/**
- * Settings Model
- * Stores application configuration as key-value pairs
- */
 export class Settings extends Model<InferAttributes<Settings>, InferCreationAttributes<Settings>> {
   declare id: CreationOptional<number>;
   declare key: string;
@@ -55,12 +51,9 @@ Settings.init(
     tableName: "settings",
     timestamps: false,
     indexes: [{ fields: ["key"], unique: true }],
-  }
+  },
 );
 
-/**
- * Predefined settings keys for type safety
- */
 export const SettingsKeys = {
   RESTAURANT_NAME: "restaurant_name",
   OPENING_HOUR: "opening_hour",

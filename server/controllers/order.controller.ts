@@ -7,19 +7,7 @@ import {
   OrderStatusType,
 } from "../validators/schemas/order.schema.js";
 
-/**
- * Order Controller
- * Handles HTTP requests for orders
- */
 class OrderController {
-  // ============================================================
-  // USER ENDPOINTS
-  // ============================================================
-
-  /**
-   * Get user's orders
-   * GET /api/orders
-   */
   async getUserOrders(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -34,10 +22,6 @@ class OrderController {
     }
   }
 
-  /**
-   * Get order by ID
-   * GET /api/orders/:id
-   */
   async getOrderById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -51,10 +35,6 @@ class OrderController {
     }
   }
 
-  /**
-   * Create order from cart
-   * POST /api/orders
-   */
   async createOrder(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -68,10 +48,6 @@ class OrderController {
     }
   }
 
-  /**
-   * Cancel order
-   * POST /api/orders/:id/cancel
-   */
   async cancelOrder(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -85,14 +61,6 @@ class OrderController {
     }
   }
 
-  // ============================================================
-  // ADMIN ENDPOINTS
-  // ============================================================
-
-  /**
-   * Get all orders (admin)
-   * GET /api/admin/orders
-   */
   async getAllOrdersAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const pagination = normalizePagination(Number(req.query.page), Number(req.query.limit));
@@ -112,10 +80,6 @@ class OrderController {
     }
   }
 
-  /**
-   * Get order by ID (admin)
-   * GET /api/admin/orders/:id
-   */
   async getOrderByIdAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const orderId = parseInt(req.params.id, 10);
@@ -128,10 +92,6 @@ class OrderController {
     }
   }
 
-  /**
-   * Update order status (admin)
-   * PATCH /api/admin/orders/:id/status
-   */
   async updateOrderStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const orderId = parseInt(req.params.id, 10);
@@ -145,10 +105,6 @@ class OrderController {
     }
   }
 
-  /**
-   * Get order statistics (admin)
-   * GET /api/admin/orders/stats
-   */
   async getOrderStats(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const stats = await orderService.getOrderStats();

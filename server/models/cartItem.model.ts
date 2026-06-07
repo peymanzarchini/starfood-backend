@@ -11,10 +11,6 @@ import { sequelize } from "../config/database.js";
 import { Cart } from "./cart.model.js";
 import { Product } from "./product.model.js";
 
-/**
- * CartItem Model
- * Represents an item in a user's shopping cart
- */
 export class CartItem extends Model<InferAttributes<CartItem>, InferCreationAttributes<CartItem>> {
   declare id: CreationOptional<number>;
   declare quantity: CreationOptional<number>;
@@ -23,7 +19,6 @@ export class CartItem extends Model<InferAttributes<CartItem>, InferCreationAttr
   declare readonly createdAt: CreationOptional<Date>;
   declare readonly updatedAt: CreationOptional<Date>;
 
-  // Associations
   declare cart?: NonAttribute<Cart>;
   declare product?: NonAttribute<Product>;
 }
@@ -69,5 +64,5 @@ CartItem.init(
       { fields: ["cartId"] },
       { fields: ["productId"] },
     ],
-  }
+  },
 );

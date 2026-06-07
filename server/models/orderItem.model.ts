@@ -11,11 +11,6 @@ import { sequelize } from "../config/database.js";
 import { Product } from "./product.model.js";
 import { Order } from "./orders.model.js";
 
-/**
- * OrderItem Model
- * Represents an individual item within an order
- * Stores snapshot of product data at time of order
- */
 export class OrderItem extends Model<
   InferAttributes<OrderItem>,
   InferCreationAttributes<OrderItem>
@@ -29,7 +24,6 @@ export class OrderItem extends Model<
   declare productId: ForeignKey<Product["id"]>;
   declare readonly createdAt: CreationOptional<Date>;
 
-  // Associations
   declare order?: NonAttribute<Order>;
   declare product?: NonAttribute<Product>;
 }
@@ -100,5 +94,5 @@ OrderItem.init(
     tableName: "order_items",
     updatedAt: false,
     indexes: [{ fields: ["orderId"] }, { fields: ["productId"] }],
-  }
+  },
 );
