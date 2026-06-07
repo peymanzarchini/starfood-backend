@@ -12,9 +12,9 @@ import { logger, morganStream } from "./config/logger.js";
 import { responseMiddleware } from "./middlewares/response.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import { routes } from "./routes/index.js";
-import { swaggerSpec } from "./config/swagger.js";
 import swaggerUi from "swagger-ui-express";
 import { runSeeders } from "./utils/settings.seeder.js";
+import { swaggerSpec } from "./config/swagger/index.js";
 
 const app: Application = express();
 
