@@ -10,10 +10,6 @@ import {
 import { sequelize } from "../config/database.js";
 import { User } from "./user.model.js";
 
-/**
- * Address Model
- * Stores delivery addresses for users
- */
 export class Address extends Model<InferAttributes<Address>, InferCreationAttributes<Address>> {
   declare id: CreationOptional<number>;
   declare title: string;
@@ -28,12 +24,8 @@ export class Address extends Model<InferAttributes<Address>, InferCreationAttrib
   declare readonly createdAt: CreationOptional<Date>;
   declare readonly updatedAt: CreationOptional<Date>;
 
-  // Associations
   declare user?: NonAttribute<User>;
 
-  /**
-   * Virtual field - Returns formatted full address
-   */
   get fullAddress(): NonAttribute<string> {
     return `${this.street}, ${this.city}`;
   }
@@ -128,5 +120,5 @@ Address.init(
     modelName: "Address",
     tableName: "addresses",
     indexes: [{ fields: ["userId"] }, { fields: ["isDefault"] }, { fields: ["city"] }],
-  }
+  },
 );

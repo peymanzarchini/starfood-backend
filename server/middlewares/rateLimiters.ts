@@ -18,9 +18,6 @@ export const authLimiter = rateLimit({
   skipSuccessfulRequests: true,
 });
 
-/**
- * Stricter limiter for password-related endpoints
- */
 export const passwordLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 3, // 3 requests per hour
@@ -33,9 +30,6 @@ export const passwordLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-/**
- * Limiter for registration
- */
 export const registerLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 3, // 3 registrations per hour per IP
@@ -48,9 +42,6 @@ export const registerLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-/**
- * Limiter for refresh token endpoint
- */
 export const refreshLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 10, // 10 requests per window
@@ -63,10 +54,6 @@ export const refreshLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-/**
- * Limiter for discount validation
- * Prevents discount code enumeration
- */
 export const discountValidationLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 10, // 10 attempts per window

@@ -10,14 +10,7 @@ import {
 import { formatDiscountResponse } from "../utils/format-response/formatDiscountResponse.js";
 import { DiscountResponse, ValidateDiscountResponse } from "../types/index.js";
 
-/**
- * Discount Service
- * Handles all discount business logic
- */
 class DiscountService {
-  /**
-   * Get all discounts (admin)
-   */
   async getAllDiscounts(
     pagination: PaginationOptions,
     filters?: {
@@ -50,9 +43,6 @@ class DiscountService {
     return paginate(discounts, count, page, limit);
   }
 
-  /**
-   * Get discount by ID (admin)
-   */
   async getDiscountById(discountId: number): Promise<DiscountResponse> {
     const discount = await Discount.findByPk(discountId);
 
@@ -63,9 +53,6 @@ class DiscountService {
     return formatDiscountResponse(discount);
   }
 
-  /**
-   * Create discount (admin)
-   */
   async createDiscount(data: CreateDiscountInput): Promise<DiscountResponse> {
     // Check if code already exists
     const existingDiscount = await Discount.findOne({
@@ -92,9 +79,6 @@ class DiscountService {
     return formatDiscountResponse(discount);
   }
 
-  /**
-   * Update discount (admin)
-   */
   async updateDiscount(discountId: number, data: UpdateDiscountInput): Promise<DiscountResponse> {
     const discount = await Discount.findByPk(discountId);
 
@@ -128,9 +112,6 @@ class DiscountService {
     return formatDiscountResponse(discount);
   }
 
-  /**
-   * Delete discount (admin)
-   */
   async deleteDiscount(discountId: number): Promise<void> {
     const discount = await Discount.findByPk(discountId);
 
@@ -141,9 +122,6 @@ class DiscountService {
     await discount.destroy();
   }
 
-  /**
-   * Toggle discount active status (admin)
-   */
   async toggleDiscountStatus(discountId: number): Promise<DiscountResponse> {
     const discount = await Discount.findByPk(discountId);
 
@@ -156,10 +134,6 @@ class DiscountService {
     return formatDiscountResponse(discount);
   }
 
-  /**
-   * Validate discount code (public)
-   * Checks if code is valid and calculates discount amount
-   */
   async validateDiscount(data: ValidateDiscountInput): Promise<ValidateDiscountResponse> {
     const discount = await Discount.findOne({
       where: { code: data.code },
@@ -269,9 +243,6 @@ class DiscountService {
     };
   }
 
-  /**
-   * Get discount statistics (admin)
-   */
   async getDiscountStats(): Promise<{
     total: number;
     active: number;
@@ -281,7 +252,6 @@ class DiscountService {
   }> {
     const now = new Date();
 
-    // Get all discounts and calculate stats in JS to avoid deprecated literal
     const allDiscounts = await Discount.findAll({
       attributes: ["id", "isActive", "expireDate", "usedCount", "usageLimit"],
     });
@@ -301,10 +271,6 @@ class DiscountService {
     };
   }
 
-  /**
-   * Increment usage count
-   * Called internally when an order is placed with a discount
-   */
   async incrementUsage(discountId: number): Promise<void> {
     await Discount.increment("usedCount", { by: 1, where: { id: discountId } });
   }

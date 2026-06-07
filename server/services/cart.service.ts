@@ -9,9 +9,6 @@ import { AddToCartInput, UpdateCartItemInput } from "../validators/schemas/cart.
 import { Op } from "@sequelize/core";
 
 class CartService {
-  /**
-   * Get or create cart for user
-   */
   private async getOrCreateCart(userId: number): Promise<Cart> {
     let cart = await Cart.findOne({ where: { userId } });
     if (!cart) {
@@ -20,9 +17,6 @@ class CartService {
     return cart;
   }
 
-  /**
-   * Get cart with items and products
-   */
   private async getCartWithItems(userId: number): Promise<Cart | null> {
     return Cart.findOne({
       where: { userId },
@@ -42,9 +36,6 @@ class CartService {
     });
   }
 
-  /**
-   * Get user's cart
-   */
   async getCart(userId: number): Promise<CartResponse> {
     const cart = await this.getCartWithItems(userId);
 
@@ -55,9 +46,6 @@ class CartService {
     return formatCartResponse(cart);
   }
 
-  /**
-   * Add item to cart
-   */
   async addItem(userId: number, data: AddToCartInput): Promise<CartResponse> {
     const product = await Product.findByPk(data.productId);
 
@@ -97,9 +85,6 @@ class CartService {
     return this.getCart(userId);
   }
 
-  /**
-   * Update cart item quantity
-   */
   async updateItemQuantity(
     userId: number,
     itemId: number,
@@ -138,9 +123,6 @@ class CartService {
     return this.getCart(userId);
   }
 
-  /**
-   * Remove item from cart
-   */
   async removeItem(userId: number, itemId: number): Promise<CartResponse> {
     const cart = await Cart.findOne({ where: { userId } });
 
@@ -163,9 +145,6 @@ class CartService {
     return this.getCart(userId);
   }
 
-  /**
-   * Clear all items from cart
-   */
   async clearCart(userId: number): Promise<CartResponse> {
     const cart = await Cart.findOne({ where: { userId } });
 
@@ -174,10 +153,6 @@ class CartService {
     }
     return createEmptyCartResponse();
   }
-
-  /**
-   * Get cart item count (for header badge)
-   */
 
   async getCartItemCount(userId: number): Promise<number> {
     const cart = await Cart.findOne({
@@ -195,11 +170,6 @@ class CartService {
     }
     return cart.items.reduce((sum: number, item) => sum + item.quantity, 0);
   }
-
-  /**
-   * Validate cart before checkout
-   * Returns list of unavailable items
-   */
 
   async validateCart(userId: number): Promise<{
     isValid: boolean;
@@ -225,9 +195,7 @@ class CartService {
       cart: formatCartResponse(cart),
     };
   }
-  /**
-   * Remove unavailable items from cart
-   */
+
   async removeUnavailableItems(userId: number): Promise<CartResponse> {
     const cart = await this.getCartWithItems(userId);
 
@@ -271,11 +239,9 @@ class CartService {
       throw HttpError.badRequest("Your shopping cart is empty.");
     }
 
-    //Calculate cart total
     const cartResponse = formatCartResponse(cart);
     const subtotal = cartResponse.total;
 
-    // Validate discount code using discount service
     const discount = await Discount.findOne({
       where: {
         code: discountCode.toUpperCase(),
@@ -302,7 +268,6 @@ class CartService {
       };
     }
 
-    // Check usage limit
     if (discount.usedCount >= discount.usageLimit) {
       return {
         isValid: false,
@@ -320,7 +285,6 @@ class CartService {
       };
     }
 
-    // Check minimum order amount
     if (subtotal < discount.minOrderAmount) {
       return {
         isValid: false,
@@ -338,17 +302,14 @@ class CartService {
       };
     }
 
-    // Calculate discount
     const discountAmount = discount.calculateDiscount(subtotal);
 
-    // Get delivery cost from settings
     const deliverySetting = await Settings.findOne({
       where: { key: "DELIVERY_FEE" },
     });
 
     const deliveryCost = deliverySetting ? parseFloat(deliverySetting.value) : 25000;
 
-    //Check free delivery thereshold
     const freeDeliveryThreshold = await Settings.findOne({
       where: { key: "FREE_DELIVERY_THRESHOLD" },
     });

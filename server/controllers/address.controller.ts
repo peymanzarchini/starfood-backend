@@ -2,15 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { addressService } from "../services/address.service.js";
 import { CreateAddressInput, UpdateAddressInput } from "../validators/schemas/address.schema.js";
 
-/**
- * Address Controller
- * Handles HTTP requests for addresses
- */
 class AddressController {
-  /**
-   * Get all addresses for current user
-   * GET /api/addresses
-   */
   async getUserAddresses(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -23,10 +15,6 @@ class AddressController {
     }
   }
 
-  /**
-   * Get address by ID
-   * GET /api/addresses/:id
-   */
   async getAddressById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -40,10 +28,6 @@ class AddressController {
     }
   }
 
-  /**
-   * Get default address
-   * GET /api/addresses/default
-   */
   async getDefaultAddress(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -61,10 +45,6 @@ class AddressController {
     }
   }
 
-  /**
-   * Create new address
-   * POST /api/addresses
-   */
   async createAddress(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -78,10 +58,6 @@ class AddressController {
     }
   }
 
-  /**
-   * Update address
-   * PUT /api/addresses/:id
-   */
   async updateAddress(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -96,10 +72,6 @@ class AddressController {
     }
   }
 
-  /**
-   * Set address as default
-   * PATCH /api/addresses/:id/default
-   */
   async setDefaultAddress(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -113,10 +85,6 @@ class AddressController {
     }
   }
 
-  /**
-   * Delete address
-   * DELETE /api/addresses/:id
-   */
   async deleteAddress(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;

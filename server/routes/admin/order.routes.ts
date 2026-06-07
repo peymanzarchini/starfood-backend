@@ -5,40 +5,20 @@ import { getOrderSchema, updateOrderStatusSchema } from "../../validators/schema
 
 const router = Router();
 
-/**
- * @route   GET /api/admin/orders/stats
- * @desc    Get order statistics
- * @access  Admin
- */
 router.get("/stats", orderController.getOrderStats.bind(orderController));
 
-/**
- * @route   GET /api/admin/orders
- * @desc    Get all orders
- * @access  Admin
- */
 router.get("/", orderController.getAllOrdersAdmin.bind(orderController));
 
-/**
- * @route   GET /api/admin/orders/:id
- * @desc    Get order by ID
- * @access  Admin
- */
 router.get(
   "/:id",
   validate(getOrderSchema),
-  orderController.getOrderByIdAdmin.bind(orderController)
+  orderController.getOrderByIdAdmin.bind(orderController),
 );
 
-/**
- * @route   PATCH /api/admin/orders/:id/status
- * @desc    Update order status
- * @access  Admin
- */
 router.patch(
   "/:id/status",
   validate(updateOrderStatusSchema),
-  orderController.updateOrderStatus.bind(orderController)
+  orderController.updateOrderStatus.bind(orderController),
 );
 
 export default router;

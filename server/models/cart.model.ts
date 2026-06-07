@@ -11,18 +11,12 @@ import { sequelize } from "../config/database.js";
 import { User } from "./user.model.js";
 import { CartItem } from "./cartItem.model.js";
 
-/**
- * Cart Model
- * Represents a user's shopping cart
- * Each user can have only one cart (one-to-one relationship)
- */
 export class Cart extends Model<InferAttributes<Cart>, InferCreationAttributes<Cart>> {
   declare id: CreationOptional<number>;
   declare userId: ForeignKey<User["id"]>;
   declare readonly createdAt: CreationOptional<Date>;
   declare readonly updatedAt: CreationOptional<Date>;
 
-  // Associations
   declare items?: NonAttribute<CartItem[]>;
 }
 
@@ -49,5 +43,5 @@ Cart.init(
     modelName: "Cart",
     tableName: "carts",
     indexes: [{ fields: ["userId"], unique: true }],
-  }
+  },
 );

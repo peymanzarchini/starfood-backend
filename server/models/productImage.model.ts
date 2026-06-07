@@ -9,11 +9,6 @@ import {
 import { sequelize } from "../config/database.js";
 import { Product } from "./product.model.js";
 
-/**
- * ProductImage Model
- * Stores gallery images for product detail page (lightbox)
- * Note: Main product image is stored in Product.imageUrl
- */
 export class ProductImage extends Model<
   InferAttributes<ProductImage>,
   InferCreationAttributes<ProductImage>
@@ -79,5 +74,5 @@ ProductImage.init(
     timestamps: true,
     updatedAt: false,
     indexes: [{ fields: ["productId"] }, { fields: ["displayOrder"] }],
-  }
+  },
 );

@@ -11,10 +11,6 @@ import { sequelize } from "../config/database.js";
 import { User } from "./user.model.js";
 import { Product } from "./product.model.js";
 
-/**
- * Review Model
- * Represents customer reviews for products
- */
 export class Review extends Model<InferAttributes<Review>, InferCreationAttributes<Review>> {
   declare id: CreationOptional<number>;
   declare rating: number;
@@ -49,7 +45,7 @@ Review.init(
     },
     comment: {
       type: DataTypes.TEXT,
-      allowNull: true, // Fixed: changed to true
+      allowNull: true,
       validate: {
         len: {
           args: [0, 1000],
@@ -88,5 +84,5 @@ Review.init(
       { fields: ["rating"] },
       { fields: ["productId"] },
     ],
-  }
+  },
 );

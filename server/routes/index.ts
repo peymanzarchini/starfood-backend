@@ -12,38 +12,24 @@ import discountRoutes from "./discount.routes.js";
 
 const router = Router();
 
-/**
- * API Routes
- */
-
-// Auth routes - /api/auth
 router.use("/auth", authRoutes);
 
-// Category routes - /api/categories
 router.use("/categories", categoryRoutes);
 
-// Product routes - /api/products
 router.use("/products", productRoutes);
 
-// Cart routes - /api/cart
 router.use("/cart", cartRoutes);
 
-// Order routes - /api/orders
 router.use("/orders", orderRoutes);
 
-// Address routes - /api/addresses
 router.use("/addresses", addressRoutes);
 
-// Review routes - /api/reviews
 router.use("/reviews", reviewRoutes);
 
-// Favorites - /api/favorites
 router.use("/favorites", favoritesRoutes);
 
-// Discount routes (public) - /api/discounts
 router.use("/discounts", discountRoutes);
 
-// Admin routes - /api/admin
 router.use("/admin", adminRoutes);
 
 export { router as routes };

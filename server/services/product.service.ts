@@ -18,42 +18,29 @@ import {
   GetProductsQuery,
 } from "../validators/schemas/product.schema.js";
 
-/**
- * Product Service
- * Handles all product business logic
- */
 class ProductService {
-  /**
-   * Build where clause for product queries
-   */
   private buildWhereClause(query: GetProductsQuery, includeUnavailable = false) {
-    // Using 'any' to avoid TypeScript issues with Sequelize Op symbols
     const where: Record<string, unknown> = {};
 
-    // Availability filter
     if (!includeUnavailable) {
       where.isAvailable = true;
     } else if (query.isAvailable !== undefined) {
       where.isAvailable = query.isAvailable;
     }
 
-    // Category filter
     if (query.categoryId) {
       where.categoryId = query.categoryId;
     }
 
-    // Price range filter
     where.price = {
       ...(query.minPrice !== undefined && { [Op.gte]: query.minPrice }),
       ...(query.maxPrice !== undefined && { [Op.lte]: query.maxPrice }),
     };
 
-    // Popular filter
     if (query.isPopular !== undefined) {
       where.isPopular = query.isPopular;
     }
 
-    // Search filter
     if (query.search) {
       where[Op.or as unknown as string] = [
         { name: { [Op.like]: `%${query.search}%` } },
@@ -64,16 +51,12 @@ class ProductService {
     return where;
   }
 
-  /**
-   * Get products with filters and pagination (public)
-   */
   async getProducts(query: GetProductsQuery) {
     const { page, limit } = query;
     const offset = getOffset(page, limit);
 
     const where = this.buildWhereClause(query, false);
 
-    // Build order
     const orderField = query.sortBy || "createdAt";
     const orderDirection = query.sortOrder || "desc";
 
@@ -89,9 +72,6 @@ class ProductService {
     return paginate(products, count, page, limit);
   }
 
-  /**
-   * Get all products for admin (including unavailable)
-   */
   async getAllProductsAdmin(query: GetProductsQuery) {
     const { page, limit } = query;
     const offset = getOffset(page, limit);
@@ -120,9 +100,6 @@ class ProductService {
     return paginate(products, count, page, limit);
   }
 
-  /**
-   * Get product by ID (public - only available)
-   */
   async getProductById(id: number): Promise<ProductDetailResponse> {
     const product = await Product.findOne({
       where: { id, isAvailable: true },
@@ -147,9 +124,6 @@ class ProductService {
     return formatProductDetailResponse(product);
   }
 
-  /**
-   * Get product by ID for admin (including unavailable)
-   */
   async getProductByIdAdmin(id: number): Promise<ProductDetailResponse> {
     const product = await Product.findByPk(id, {
       include: [
@@ -173,9 +147,6 @@ class ProductService {
     return formatProductDetailResponse(product);
   }
 
-  /**
-   * Get popular products (public)
-   */
   async getPopularProducts(limit: number = 10): Promise<ProductListResponse[]> {
     const products = await Product.findAll({
       where: {
@@ -189,9 +160,6 @@ class ProductService {
     return products.map(formatProductListResponse);
   }
 
-  /**
-   * Get discounted products (public)
-   */
   async getDiscountedProducts(limit: number = 10): Promise<ProductListResponse[]> {
     const products = await Product.findAll({
       where: {
@@ -205,11 +173,7 @@ class ProductService {
     return products.map(formatProductListResponse);
   }
 
-  /**
-   * Create product (admin)
-   */
   async createProduct(data: CreateProductInput): Promise<ProductDetailResponse> {
-    // Verify category exists
     const category = await Category.findByPk(data.categoryId);
     if (!category) {
       throw HttpError.badRequest("Category not found");
@@ -232,9 +196,6 @@ class ProductService {
     return this.getProductByIdAdmin(product.id);
   }
 
-  /**
-   * Update product (admin)
-   */
   async updateProduct(id: number, data: UpdateProductInput): Promise<ProductDetailResponse> {
     const product = await Product.findByPk(id);
 
@@ -242,7 +203,6 @@ class ProductService {
       throw HttpError.notFound("Product not found");
     }
 
-    // Verify category if being changed
     if (data.categoryId && data.categoryId !== product.categoryId) {
       const category = await Category.findByPk(data.categoryId);
       if (!category) {
@@ -267,9 +227,6 @@ class ProductService {
     return this.getProductByIdAdmin(id);
   }
 
-  /**
-   * Delete product (admin)
-   */
   async deleteProduct(id: number): Promise<void> {
     const product = await Product.findByPk(id);
 
@@ -277,15 +234,11 @@ class ProductService {
       throw HttpError.notFound("Product not found");
     }
 
-    // Delete associated images first
     await ProductImage.destroy({ where: { productId: id } });
 
     await product.destroy();
   }
 
-  /**
-   * Toggle product availability (admin)
-   */
   async toggleAvailability(id: number): Promise<ProductDetailResponse> {
     const product = await Product.findByPk(id);
 
@@ -298,9 +251,6 @@ class ProductService {
     return this.getProductByIdAdmin(id);
   }
 
-  /**
-   * Toggle product popular status (admin)
-   */
   async togglePopular(id: number): Promise<ProductDetailResponse> {
     const product = await Product.findByPk(id);
 
@@ -313,16 +263,9 @@ class ProductService {
     return this.getProductByIdAdmin(id);
   }
 
-  // ============================================================
-  // PRODUCT IMAGES
-  // ============================================================
-
-  /**
-   * Add image to product gallery (admin)
-   */
   async addProductImage(
     productId: number,
-    data: { url: string; thumbnailUrl?: string; altText?: string }
+    data: { url: string; thumbnailUrl?: string; altText?: string },
   ): Promise<ProductImageResponse> {
     const product = await Product.findByPk(productId);
 
@@ -330,7 +273,6 @@ class ProductService {
       throw HttpError.notFound("Product not found");
     }
 
-    // Get max display order
     const maxOrder = await ProductImage.max<number, ProductImage>("displayOrder", {
       where: { productId },
     });
@@ -346,12 +288,9 @@ class ProductService {
     return formatProductImageResponse(image);
   }
 
-  /**
-   * Update product image (admin)
-   */
   async updateProductImage(
     imageId: number,
-    data: { url?: string; thumbnailUrl?: string; altText?: string }
+    data: { url?: string; thumbnailUrl?: string; altText?: string },
   ): Promise<ProductImageResponse> {
     const image = await ProductImage.findByPk(imageId);
 
@@ -368,9 +307,6 @@ class ProductService {
     return formatProductImageResponse(image);
   }
 
-  /**
-   * Delete product image (admin)
-   */
   async deleteProductImage(imageId: number): Promise<void> {
     const image = await ProductImage.findByPk(imageId);
 
@@ -381,12 +317,9 @@ class ProductService {
     await image.destroy();
   }
 
-  /**
-   * Reorder product images (admin)
-   */
   async reorderProductImages(
     productId: number,
-    orderedIds: number[]
+    orderedIds: number[],
   ): Promise<ProductImageResponse[]> {
     const product = await Product.findByPk(productId);
 
@@ -394,7 +327,6 @@ class ProductService {
       throw HttpError.notFound("Product not found");
     }
 
-    // Validate all image IDs belong to this product
     const images = await ProductImage.findAll({
       where: { id: orderedIds, productId },
     });
@@ -403,12 +335,12 @@ class ProductService {
       throw HttpError.badRequest("Some image IDs are invalid");
     }
 
-    // Update display order
     await Promise.all(
-      orderedIds.map((id, index) => ProductImage.update({ displayOrder: index }, { where: { id } }))
+      orderedIds.map((id, index) =>
+        ProductImage.update({ displayOrder: index }, { where: { id } }),
+      ),
     );
 
-    // Return updated images
     const updatedImages = await ProductImage.findAll({
       where: { productId },
       order: [["displayOrder", "ASC"]],

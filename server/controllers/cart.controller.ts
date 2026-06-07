@@ -2,15 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { cartService } from "../services/cart.service.js";
 import { AddToCartInput, UpdateCartItemInput } from "../validators/schemas/cart.schema.js";
 
-/**
- * Cart Controller
- * Handles HTTP requests for shopping cart
- */
 class CartController {
-  /**
-   * Get user's cart
-   * GET /api/cart
-   */
   async getCart(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -23,10 +15,6 @@ class CartController {
     }
   }
 
-  /**
-   * Add item to cart
-   * POST /api/cart/items
-   */
   async addItem(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -40,10 +28,6 @@ class CartController {
     }
   }
 
-  /**
-   * Update cart item quantity
-   * PATCH /api/cart/items/:itemId
-   */
   async updateItemQuantity(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -58,10 +42,6 @@ class CartController {
     }
   }
 
-  /**
-   * Remove item from cart
-   * DELETE /api/cart/items/:itemId
-   */
   async removeItem(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -75,10 +55,6 @@ class CartController {
     }
   }
 
-  /**
-   * Clear all items from cart
-   * DELETE /api/cart
-   */
   async clearCart(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -91,10 +67,6 @@ class CartController {
     }
   }
 
-  /**
-   * Get cart item count
-   * GET /api/cart/count
-   */
   async getCartItemCount(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -107,10 +79,6 @@ class CartController {
     }
   }
 
-  /**
-   * Validate cart before checkout
-   * GET /api/cart/validate
-   */
   async validateCart(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -127,10 +95,6 @@ class CartController {
     }
   }
 
-  /**
-   * Remove unavailable items from cart
-   * DELETE /api/cart/unavailable
-   */
   async removeUnavailableItems(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
@@ -142,11 +106,6 @@ class CartController {
       next(error);
     }
   }
-
-  /**
-   * Preview discount on cart
-   * GET /api/cart/preview-discount?code=WELCOME20
-   */
 
   async previewDiscount(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {

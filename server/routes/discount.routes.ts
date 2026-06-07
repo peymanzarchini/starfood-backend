@@ -5,11 +5,6 @@ import { validateDiscountSchema } from "../validators/schemas/discount.schema.js
 
 const router = Router();
 
-/**
- * @route   POST /api/discounts/validate
- * @desc    Validate a discount code
- * @access  Public
- */
 router.post(
   "/validate",
   validate(validateDiscountSchema),

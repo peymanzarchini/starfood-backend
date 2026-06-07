@@ -10,10 +10,6 @@ import { sequelize } from "../config/database.js";
 import { User } from "./user.model.js";
 import { Product } from "./product.model.js";
 
-/**
- * Favorite Model
- * Represents user's favorite/wishlisted products
- */
 export class Favorite extends Model<InferAttributes<Favorite>, InferCreationAttributes<Favorite>> {
   declare id: CreationOptional<number>;
   declare userId: ForeignKey<User["id"]>;
@@ -52,5 +48,5 @@ Favorite.init(
       { fields: ["userId"] },
       { fields: ["productId"] },
     ],
-  }
+  },
 );

@@ -7,10 +7,6 @@ import {
 } from "@sequelize/core";
 import { sequelize } from "../config/database.js";
 
-/**
- * Category Model
- * Represents product categories (e.g., Burgers, Pizzas, Drinks)
- */
 export class Category extends Model<InferAttributes<Category>, InferCreationAttributes<Category>> {
   declare id: CreationOptional<number>;
   declare name: string;
@@ -79,5 +75,5 @@ Category.init(
       { fields: ["isActive"] },
       { fields: ["name"], unique: true },
     ],
-  }
+  },
 );

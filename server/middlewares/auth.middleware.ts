@@ -4,14 +4,9 @@ import { env } from "../config/env.js";
 import { HttpError } from "../utils/httpError.js";
 import { AuthenticatedJwtPayload } from "../types/express.js";
 
-/**
- * Authentication middleware
- * Verifies JWT token and attaches user to request
- */
 export const authenticate = (req: Request, _res: Response, next: NextFunction): void => {
   try {
     let token: string = "";
-    // Get token from header
     const authHeader = req.headers.authorization;
 
     if (authHeader && authHeader.startsWith("Bearer ")) {
@@ -24,10 +19,8 @@ export const authenticate = (req: Request, _res: Response, next: NextFunction): 
       throw HttpError.unauthorized("Access token is required");
     }
 
-    // Verify token
     const decoded = jwt.verify(token, env.jwt.secret) as AuthenticatedJwtPayload;
 
-    // Attach user to request
     req.user = {
       id: decoded.id,
       email: decoded.email,
@@ -50,10 +43,6 @@ export const authenticate = (req: Request, _res: Response, next: NextFunction): 
   }
 };
 
-/**
- * Optional authentication middleware
- * Attaches user if token exists, but doesn't fail if not
- */
 export const optionalAuth = (req: Request, _res: Response, next: NextFunction): void => {
   try {
     const authHeader = req.headers.authorization;
@@ -78,16 +67,10 @@ export const optionalAuth = (req: Request, _res: Response, next: NextFunction): 
 
     next();
   } catch {
-    // Token invalid, but we don't fail - just continue without user
     next();
   }
 };
 
-/**
- * Authorization middleware factory
- * Restricts access to specific roles
- * @param roles - Allowed roles
- */
 export const authorize = (...roles: Array<"admin" | "customer">) => {
   return (req: Request, _res: Response, next: NextFunction): void => {
     if (!req.user) {
@@ -104,8 +87,4 @@ export const authorize = (...roles: Array<"admin" | "customer">) => {
   };
 };
 
-/**
- * Admin only middleware
- * Shorthand for authorize("admin")
- */
 export const adminOnly = authorize("admin");

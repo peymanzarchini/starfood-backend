@@ -6,19 +6,7 @@ import {
   GetProductsQuery,
 } from "../validators/schemas/product.schema.js";
 
-/**
- * Product Controller
- * Handles HTTP requests for products
- */
 class ProductController {
-  // ============================================================
-  // PUBLIC ENDPOINTS
-  // ============================================================
-
-  /**
-   * Get products with filters
-   * GET /api/products
-   */
   async getProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const query: GetProductsQuery = {
@@ -41,10 +29,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Get product by ID
-   * GET /api/products/:id
-   */
   async getProductById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = parseInt(req.params.id, 10);
@@ -57,10 +41,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Get popular products
-   * GET /api/products/popular
-   */
   async getPopularProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const limit = Number(req.query.limit) || 10;
@@ -73,10 +53,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Get discounted products
-   * GET /api/products/discounted
-   */
   async getDiscountedProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const limit = Number(req.query.limit) || 10;
@@ -89,14 +65,6 @@ class ProductController {
     }
   }
 
-  // ============================================================
-  // ADMIN ENDPOINTS
-  // ============================================================
-
-  /**
-   * Get all products (admin)
-   * GET /api/admin/products
-   */
   async getAllProductsAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const query: GetProductsQuery = {
@@ -108,8 +76,8 @@ class ProductController {
           req.query.isAvailable === "true"
             ? true
             : req.query.isAvailable === "false"
-            ? false
-            : undefined,
+              ? false
+              : undefined,
         sortBy: (req.query.sortBy as GetProductsQuery["sortBy"]) || "createdAt",
         sortOrder: (req.query.sortOrder as GetProductsQuery["sortOrder"]) || "desc",
       };
@@ -122,10 +90,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Get product by ID (admin)
-   * GET /api/admin/products/:id
-   */
   async getProductByIdAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = parseInt(req.params.id, 10);
@@ -138,10 +102,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Create product (admin)
-   * POST /api/admin/products
-   */
   async createProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const data: CreateProductInput = req.body;
@@ -154,10 +114,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Update product (admin)
-   * PUT /api/admin/products/:id
-   */
   async updateProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = parseInt(req.params.id, 10);
@@ -171,10 +127,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Delete product (admin)
-   * DELETE /api/admin/products/:id
-   */
   async deleteProduct(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = parseInt(req.params.id, 10);
@@ -187,10 +139,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Toggle product availability (admin)
-   * PATCH /api/admin/products/:id/toggle-availability
-   */
   async toggleAvailability(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = parseInt(req.params.id, 10);
@@ -203,10 +151,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Toggle product popular status (admin)
-   * PATCH /api/admin/products/:id/toggle-popular
-   */
   async togglePopular(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = parseInt(req.params.id, 10);
@@ -219,14 +163,6 @@ class ProductController {
     }
   }
 
-  // ============================================================
-  // PRODUCT IMAGES (ADMIN)
-  // ============================================================
-
-  /**
-   * Add image to product gallery
-   * POST /api/admin/products/:id/images
-   */
   async addProductImage(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const productId = parseInt(req.params.id, 10);
@@ -244,10 +180,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Update product image
-   * PUT /api/admin/products/images/:imageId
-   */
   async updateProductImage(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const imageId = parseInt(req.params.imageId, 10);
@@ -265,10 +197,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Delete product image
-   * DELETE /api/admin/products/images/:imageId
-   */
   async deleteProductImage(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const imageId = parseInt(req.params.imageId, 10);
@@ -281,10 +209,6 @@ class ProductController {
     }
   }
 
-  /**
-   * Reorder product images
-   * PUT /api/admin/products/:id/images/reorder
-   */
   async reorderProductImages(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const productId = parseInt(req.params.id, 10);
