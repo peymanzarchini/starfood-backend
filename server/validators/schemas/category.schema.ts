@@ -1,8 +1,5 @@
 import { z } from "zod";
 
-/**
- * Create category schema (admin only)
- */
 export const createCategorySchema = z.object({
   body: z.object({
     name: z
@@ -13,7 +10,10 @@ export const createCategorySchema = z.object({
 
     description: z.string().trim().max(500, "Description cannot exceed 500 characters").optional(),
 
-    imageUrl: z.string().url("Invalid image URL").optional(),
+    imageUrl: z.preprocess(
+      (val) => (val === "" ? undefined : val),
+      z.url("Invalid image URL").optional(),
+    ),
 
     displayOrder: z
       .number()
@@ -26,9 +26,6 @@ export const createCategorySchema = z.object({
   }),
 });
 
-/**
- * Update category schema (admin only)
- */
 export const updateCategorySchema = z.object({
   params: z.object({
     id: z
@@ -39,9 +36,6 @@ export const updateCategorySchema = z.object({
   body: createCategorySchema.shape.body.partial(),
 });
 
-/**
- * Get category by ID schema
- */
 export const getCategoryByIdSchema = z.object({
   params: z.object({
     id: z
@@ -51,7 +45,6 @@ export const getCategoryByIdSchema = z.object({
   }),
 });
 
-// Type exports
 export type CreateCategoryInput = z.infer<typeof createCategorySchema>["body"];
 export type UpdateCategoryInput = z.infer<typeof updateCategorySchema>["body"];
 export type UpdateCategoryParams = z.infer<typeof updateCategorySchema>["params"];

@@ -2,28 +2,17 @@ import jwt, { SignOptions } from "jsonwebtoken";
 import { env } from "../config/env.js";
 import { AuthenticatedUser } from "../types/express.js";
 
-/**
- * Token pair interface
- */
 export interface TokenPair {
   accessToken: string;
   refreshToken: string;
 }
 
-/**
- * JWT payload for tokens
- */
 interface JwtPayload {
   id: number;
   email: string;
   role: "admin" | "customer";
 }
 
-/**
- * Parse expiration time to seconds
- * @param time - Time string like "1h", "7d", "30m"
- * @returns Number of seconds
- */
 function parseExpiresIn(time: string): number {
   const match = time.match(/^(\d+)([smhd])$/);
 
@@ -48,10 +37,6 @@ function parseExpiresIn(time: string): number {
   }
 }
 
-/**
- * Generate access token
- * @param user - User data to encode
- */
 export function generateAccessToken(user: AuthenticatedUser): string {
   const payload: JwtPayload = {
     id: user.id,
@@ -66,10 +51,6 @@ export function generateAccessToken(user: AuthenticatedUser): string {
   return jwt.sign(payload, env.jwt.secret, options);
 }
 
-/**
- * Generate refresh token
- * @param user - User data to encode
- */
 export function generateRefreshToken(user: AuthenticatedUser): string {
   const payload: JwtPayload = {
     id: user.id,
@@ -84,10 +65,6 @@ export function generateRefreshToken(user: AuthenticatedUser): string {
   return jwt.sign(payload, env.jwt.refreshSecret, options);
 }
 
-/**
- * Generate both access and refresh tokens
- * @param user - User data to encode
- */
 export function generateTokens(user: AuthenticatedUser): TokenPair {
   return {
     accessToken: generateAccessToken(user),
@@ -95,18 +72,10 @@ export function generateTokens(user: AuthenticatedUser): TokenPair {
   };
 }
 
-/**
- * Verify access token
- * @param token - JWT token to verify
- */
 export function verifyAccessToken(token: string): JwtPayload {
   return jwt.verify(token, env.jwt.secret) as JwtPayload;
 }
 
-/**
- * Verify refresh token
- * @param token - Refresh token to verify
- */
 export function verifyRefreshToken(token: string): JwtPayload {
   return jwt.verify(token, env.jwt.refreshSecret) as JwtPayload;
 }

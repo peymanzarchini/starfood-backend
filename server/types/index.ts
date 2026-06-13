@@ -46,12 +46,13 @@ export interface ProductListResponse {
   finalPrice: number;
   discount: number;
   discountAmount: number;
-  imageUrl: string;
+  imageUrl: string | null;
   isAvailable: boolean;
   isPopular: boolean;
   preparationTime: number | null;
   calories: number | null;
   categoryId: number;
+  imageCount?: number;
 }
 
 export interface ProductDetailResponse extends ProductListResponse {
@@ -247,4 +248,16 @@ export interface ValidateDiscountResponse {
   };
   calculatedDiscount: number;
   message: string;
+}
+
+export interface ReviewStats {
+  averageRating: number;
+  totalReviews: number;
+  ratingDistribution: {
+    1: number;
+    2: number;
+    3: number;
+    4: number;
+    5: number;
+  };
 }

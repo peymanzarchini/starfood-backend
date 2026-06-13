@@ -37,7 +37,7 @@ export function formatReviewWithProductResponse(review: Review): ReviewWithProdu
     product: {
       id: product.id,
       name: product.name,
-      imageUrl: product.imageUrl,
+      imageUrl: product.imageUrl!,
     },
   };
 }
@@ -63,7 +63,7 @@ export function formatReviewAdminResponse(review: Review): ReviewAdminResponse {
     product: {
       id: product.id,
       name: product.name,
-      imageUrl: product.imageUrl,
+      imageUrl: product.imageUrl!,
     },
     createdAt: review.createdAt!,
     updatedAt: review.updatedAt!,

@@ -16,7 +16,7 @@ export class Product extends Model<InferAttributes<Product>, InferCreationAttrib
   declare name: string;
   declare description: string;
   declare price: number;
-  declare imageUrl: string;
+  declare imageUrl: CreationOptional<string | null>;
   declare isAvailable: CreationOptional<boolean>;
   declare ingredients: CreationOptional<string[]>;
   declare preparationTime: CreationOptional<number | null>;
@@ -87,9 +87,8 @@ Product.init(
     },
     imageUrl: {
       type: DataTypes.STRING(500),
-      allowNull: false,
+      allowNull: true,
       validate: {
-        notNull: { msg: "Image URL is required" },
         isUrl: { msg: "Invalid image URL format" },
       },
       comment: "Main product image for listings",

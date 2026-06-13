@@ -1,0 +1,76 @@
+export const discountSchema = {
+  Discount: {
+    type: "object",
+    properties: {
+      id: { type: "integer" },
+      code: { type: "string" },
+      type: { type: "string", enum: ["percentage", "fixed"] },
+      value: { type: "number" },
+      minOrderAmount: { type: "number" },
+      maxDiscountAmount: { type: "number", nullable: true },
+      usageLimit: { type: "integer" },
+      usedCount: { type: "integer" },
+      startDate: { type: "string", format: "date-time" },
+      expireDate: { type: "string", format: "date-time" },
+      isActive: { type: "boolean" },
+      isValid: { type: "boolean" },
+      createdAt: { type: "string", format: "date-time" },
+      updatedAt: { type: "string", format: "date-time" },
+    },
+  },
+  CreateDiscountInput: {
+    type: "object",
+    required: ["code", "value", "expireDate"],
+    properties: {
+      code: { type: "string", minLength: 3, maxLength: 50, example: "WELCOME20" },
+      type: { type: "string", enum: ["percentage", "fixed"], default: "percentage" },
+      value: { type: "number", minimum: 0.01, example: 20 },
+      minOrderAmount: { type: "number", minimum: 0, default: 0, example: 100000 },
+      maxDiscountAmount: { type: "number", minimum: 0, nullable: true, example: 50000 },
+      usageLimit: { type: "integer", minimum: 1, default: 1, example: 100 },
+      startDate: { type: "string", format: "date-time" },
+      expireDate: { type: "string", format: "date-time", example: "2025-12-31T23:59:59.000Z" },
+      isActive: { type: "boolean", default: true },
+    },
+  },
+  UpdateDiscountInput: {
+    type: "object",
+    properties: {
+      code: { type: "string", minLength: 3, maxLength: 50 },
+      type: { type: "string", enum: ["percentage", "fixed"] },
+      value: { type: "number", minimum: 0.01 },
+      minOrderAmount: { type: "number", minimum: 0 },
+      maxDiscountAmount: { type: "number", minimum: 0, nullable: true },
+      usageLimit: { type: "integer", minimum: 1 },
+      startDate: { type: "string", format: "date-time" },
+      expireDate: { type: "string", format: "date-time" },
+      isActive: { type: "boolean" },
+    },
+  },
+  ValidateDiscountInput: {
+    type: "object",
+    required: ["code", "orderAmount"],
+    properties: {
+      code: { type: "string", example: "WELCOME20" },
+      orderAmount: { type: "number", minimum: 0, example: 250000 },
+    },
+  },
+  ValidateDiscountResponse: {
+    type: "object",
+    properties: {
+      isValid: { type: "boolean", example: true },
+      discount: {
+        type: "object",
+        properties: {
+          code: { type: "string" },
+          type: { type: "string", enum: ["percentage", "fixed"] },
+          value: { type: "number" },
+          minOrderAmount: { type: "number" },
+          maxDiscountAmount: { type: "number", nullable: true },
+        },
+      },
+      calculatedDiscount: { type: "number", example: 50000 },
+      message: { type: "string", example: "20% discount applied - 50,000 تومان off" },
+    },
+  },
+};

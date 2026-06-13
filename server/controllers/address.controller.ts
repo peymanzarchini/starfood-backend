@@ -1,15 +1,22 @@
 import { Request, Response, NextFunction } from "express";
 import { addressService } from "../services/address.service.js";
 import { CreateAddressInput, UpdateAddressInput } from "../validators/schemas/address.schema.js";
+import { getPaginationMeta, normalizePagination } from "../utils/pagination.js";
 
 class AddressController {
   async getUserAddresses(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
+      const pagination = normalizePagination(Number(req.query.page), Number(req.query.limit));
 
-      const addresses = await addressService.getUserAddresses(userId);
+      const { items, totalItems } = await addressService.getUserAddresses(
+        userId,
+        pagination.page,
+        pagination.limit,
+      );
+      const paginationMeta = getPaginationMeta(totalItems, pagination.page, pagination.limit);
 
-      res.success("Addresses retrieved successfully", addresses);
+      res.success("Addresses retrieved successfully", items, 200, paginationMeta);
     } catch (error) {
       next(error);
     }

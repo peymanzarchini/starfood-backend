@@ -124,4 +124,54 @@ export const productPaths = {
       },
     },
   },
+
+  "/products/{id}/reviews": {
+    get: {
+      tags: ["Products", "Reviews"],
+      summary: "Get reviews for a specific product",
+      parameters: [
+        { name: "id", in: "path", required: true, schema: { type: "integer" } },
+        { name: "page", in: "query", schema: { type: "integer" } },
+        { name: "limit", in: "query", schema: { type: "integer" } },
+      ],
+      responses: {
+        200: {
+          content: {
+            "application/json": {
+              schema: {
+                allOf: [
+                  { $ref: "#/components/schemas/ApiResponse" },
+                  {
+                    type: "object",
+                    properties: {
+                      body: {
+                        type: "object",
+                        properties: {
+                          reviews: {
+                            type: "array",
+                            items: { $ref: "#/components/schemas/Review" },
+                          },
+                          stats: {
+                            type: "object",
+                            properties: {
+                              averageRating: { type: "number" },
+                              totalReviews: { type: "integer" },
+                              ratingDistribution: {
+                                type: "object",
+                                additionalProperties: { type: "integer" },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    },
+  },
 };

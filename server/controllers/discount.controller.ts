@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { discountService } from "../services/discount.service.js";
-import { normalizePagination } from "../utils/pagination.js";
+import { getPaginationMeta, normalizePagination } from "../utils/pagination.js";
 import {
   CreateDiscountInput,
   UpdateDiscountInput,
@@ -16,8 +16,11 @@ class DiscountController {
           req.query.isActive === "true" ? true : req.query.isActive === "false" ? false : undefined,
         search: req.query.search as string | undefined,
       };
-      const result = await discountService.getAllDiscounts(pagination, filters);
-      res.success("Discounts retrieved successfully", result);
+
+      const { items, totalItems } = await discountService.getAllDiscounts(pagination, filters);
+      const paginationMeta = getPaginationMeta(totalItems, pagination.page, pagination.limit);
+
+      res.success("Discounts retrieved successfully", items, 200, paginationMeta);
     } catch (error) {
       next(error);
     }

@@ -4,14 +4,20 @@ import {
   CreateProductInput,
   UpdateProductInput,
   GetProductsQuery,
+  AddProductImagesInput,
+  UpdateProductImageInput,
 } from "../validators/schemas/product.schema.js";
+import { getPaginationMeta, normalizePagination } from "../utils/pagination.js";
 
 class ProductController {
   async getProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
+      const validatedQuery = req.query as unknown as GetProductsQuery;
+
+      const pagination = normalizePagination(validatedQuery.page, validatedQuery.limit);
       const query: GetProductsQuery = {
-        page: Number(req.query.page) || 1,
-        limit: Number(req.query.limit) || 10,
+        page: pagination.page,
+        limit: pagination.limit,
         categoryId: req.query.categoryId ? Number(req.query.categoryId) : undefined,
         minPrice: req.query.minPrice ? Number(req.query.minPrice) : undefined,
         maxPrice: req.query.maxPrice ? Number(req.query.maxPrice) : undefined,
@@ -21,9 +27,11 @@ class ProductController {
         sortOrder: (req.query.sortOrder as GetProductsQuery["sortOrder"]) || "desc",
       };
 
-      const result = await productService.getProducts(query);
+      const { items, totalItems } = await productService.getProducts(query);
 
-      res.success("Products retrieved successfully", result);
+      const paginationMeta = getPaginationMeta(totalItems, pagination.page, pagination.limit);
+
+      res.success("Products retrieved successfully", items, 200, paginationMeta);
     } catch (error) {
       next(error);
     }
@@ -67,9 +75,11 @@ class ProductController {
 
   async getAllProductsAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
+      const pagination = normalizePagination(Number(req.query.page), Number(req.query.limit));
+
       const query: GetProductsQuery = {
-        page: Number(req.query.page) || 1,
-        limit: Number(req.query.limit) || 10,
+        page: pagination.page,
+        limit: pagination.limit,
         categoryId: req.query.categoryId ? Number(req.query.categoryId) : undefined,
         search: req.query.search as string | undefined,
         isAvailable:
@@ -82,9 +92,11 @@ class ProductController {
         sortOrder: (req.query.sortOrder as GetProductsQuery["sortOrder"]) || "desc",
       };
 
-      const result = await productService.getAllProductsAdmin(query);
+      const { items, totalItems } = await productService.getAllProductsAdmin(query);
 
-      res.success("Products retrieved successfully", result);
+      const paginationMeta = getPaginationMeta(totalItems, pagination.page, pagination.limit);
+
+      res.success("Products retrieved successfully", items, 200, paginationMeta);
     } catch (error) {
       next(error);
     }
@@ -163,18 +175,14 @@ class ProductController {
     }
   }
 
-  async addProductImage(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async addProductImages(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const productId = parseInt(req.params.id, 10);
-      const { url, thumbnailUrl, altText } = req.body;
+      const data: AddProductImagesInput = req.body;
 
-      const image = await productService.addProductImage(productId, {
-        url,
-        thumbnailUrl,
-        altText,
-      });
+      const images = await productService.addProductImages(productId, data);
 
-      res.success("Image added successfully", image, 201);
+      res.success("Images added successfully", images, 201);
     } catch (error) {
       next(error);
     }
@@ -183,13 +191,9 @@ class ProductController {
   async updateProductImage(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const imageId = parseInt(req.params.imageId, 10);
-      const { url, thumbnailUrl, altText } = req.body;
+      const data: UpdateProductImageInput = req.body;
 
-      const image = await productService.updateProductImage(imageId, {
-        url,
-        thumbnailUrl,
-        altText,
-      });
+      const image = await productService.updateProductImage(imageId, data);
 
       res.success("Image updated successfully", image);
     } catch (error) {
@@ -222,6 +226,31 @@ class ProductController {
       const images = await productService.reorderProductImages(productId, orderedIds);
 
       res.success("Images reordered successfully", images);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async setCoverImage(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const productId = parseInt(req.params.id, 10);
+      const imageId = parseInt(req.params.imageId, 10);
+
+      const product = await productService.setCoverImageFromGallery(productId, imageId);
+
+      res.success("Cover image set successfully from gallery", product);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async removeCoverImage(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const productId = parseInt(req.params.id, 10);
+
+      const product = await productService.removeCoverImage(productId);
+
+      res.success("Cover image removed successfully", product);
     } catch (error) {
       next(error);
     }

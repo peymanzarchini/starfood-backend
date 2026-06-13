@@ -19,7 +19,7 @@ export function formatCartItemResponse(cartItem: CartItem): CartItemResponse {
       price: product.price,
       finalPrice,
       discount: product.discount,
-      imageUrl: product.imageUrl,
+      imageUrl: product.imageUrl!,
       isAvailable: product.isAvailable,
     },
     itemTotal: finalPrice * cartItem.quantity,

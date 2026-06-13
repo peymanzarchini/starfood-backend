@@ -59,7 +59,6 @@ export const categoryPaths = {
       ],
       responses: {
         200: {
-          description: "Products with pagination",
           content: {
             "application/json": {
               schema: {
@@ -71,6 +70,7 @@ export const categoryPaths = {
                       body: {
                         type: "object",
                         properties: {
+                          category: { $ref: "#/components/schemas/Category" },
                           products: {
                             type: "array",
                             items: { $ref: "#/components/schemas/Product" },

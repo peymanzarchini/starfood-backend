@@ -12,13 +12,13 @@ import {
 } from "../models/index.js";
 import { sequelize } from "../config/database.js";
 import { HttpError } from "../utils/httpError.js";
-import { paginate, getOffset, PaginationOptions } from "../utils/pagination.js";
+import { getOffset, PaginationOptions } from "../utils/pagination.js";
 import {
   formatOrderListResponse,
   formatOrderDetailResponse,
   formatOrderAdminResponse,
 } from "../utils/format-response/formatOrderResponse.js";
-import { OrderDetailResponse, OrderAdminResponse } from "../types/index.js";
+import { OrderDetailResponse, OrderAdminResponse, OrderListResponse } from "../types/index.js";
 import { CreateOrderInput, UpdateOrderStatusInput } from "../validators/schemas/order.schema.js";
 import { OrderStatus } from "../models/orders.model.js";
 
@@ -42,7 +42,11 @@ class OrderService {
     return `ORD-${year}${month}${day}-${random}`;
   }
 
-  async getUserOrders(userId: number, pagination: PaginationOptions, status?: OrderStatus) {
+  async getUserOrders(
+    userId: number,
+    pagination: PaginationOptions,
+    status?: OrderStatus,
+  ): Promise<{ items: OrderListResponse[]; totalItems: number }> {
     const { page, limit } = pagination;
     const offset = getOffset(page, limit);
 
@@ -68,7 +72,10 @@ class OrderService {
 
     const orders = rows.map(formatOrderListResponse);
 
-    return paginate(orders, count, page, limit);
+    return {
+      items: orders,
+      totalItems: count,
+    };
   }
 
   async getOrderById(orderId: number, userId: number): Promise<OrderDetailResponse> {
@@ -275,7 +282,7 @@ class OrderService {
       endDate?: string;
       search?: string;
     },
-  ) {
+  ): Promise<{ items: OrderListResponse[]; totalItems: number }> {
     const { page, limit } = pagination;
     const offset = getOffset(page, limit);
 
@@ -325,7 +332,10 @@ class OrderService {
 
     const orders = rows.map(formatOrderListResponse);
 
-    return paginate(orders, count, page, limit);
+    return {
+      items: orders,
+      totalItems: count,
+    };
   }
 
   async getOrderByIdAdmin(orderId: number): Promise<OrderAdminResponse> {
