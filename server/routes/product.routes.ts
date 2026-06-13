@@ -2,11 +2,11 @@ import { Router } from "express";
 import { productController } from "../controllers/product.controller.js";
 import { reviewController } from "../controllers/review.controller.js";
 import { validate } from "../middlewares/validate.middleware.js";
-import { getProductByIdSchema } from "../validators/schemas/product.schema.js";
+import { getProductByIdSchema, getProductsSchema } from "../validators/schemas/product.schema.js";
 
 const router = Router();
 
-router.get("/", productController.getProducts.bind(productController));
+router.get("/", validate(getProductsSchema), productController.getProducts.bind(productController));
 
 router.get("/popular", productController.getPopularProducts.bind(productController));
 

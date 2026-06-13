@@ -1,6 +1,6 @@
 import { Review, Product, User } from "../models/index.js";
 import { HttpError } from "../utils/httpError.js";
-import { paginate, getOffset, PaginationOptions } from "../utils/pagination.js";
+import { getOffset, PaginationOptions } from "../utils/pagination.js";
 import {
   formatReviewResponse,
   formatReviewWithProductResponse,
@@ -9,7 +9,8 @@ import {
 import {
   ReviewWithProductResponse,
   ReviewAdminResponse,
-  ProductReviewsResponse,
+  ReviewResponse,
+  ReviewStats,
 } from "../types/index.js";
 import { CreateReviewInput, UpdateReviewInput } from "../validators/schemas/review.schema.js";
 
@@ -17,7 +18,7 @@ class ReviewService {
   async getProductReviews(
     productId: number,
     pagination: PaginationOptions,
-  ): Promise<ProductReviewsResponse> {
+  ): Promise<{ items: ReviewResponse[]; totalItems: number; stats: ReviewStats }> {
     const { page, limit } = pagination;
     const offset = getOffset(page, limit);
 
@@ -42,13 +43,9 @@ class ReviewService {
 
     const stats = await this.getProductReviewStats(productId);
 
-    const reviews = rows.map(formatReviewResponse);
+    const items = rows.map(formatReviewResponse);
 
-    return {
-      reviews,
-      ...paginate(reviews, count, page, limit),
-      stats,
-    };
+    return { items, totalItems: count, stats };
   }
 
   async getProductReviewStats(productId: number) {
@@ -83,32 +80,25 @@ class ReviewService {
     };
   }
 
-  async getUserReviews(userId: number, pagination: PaginationOptions) {
+  async getUserReviews(
+    userId: number,
+    pagination: PaginationOptions,
+  ): Promise<{ items: ReviewWithProductResponse[]; totalItems: number }> {
     const { page, limit } = pagination;
     const offset = getOffset(page, limit);
 
     const { count, rows } = await Review.findAndCountAll({
       where: { userId },
       include: [
-        {
-          model: User,
-          as: "user",
-          attributes: ["id", "firstName", "lastName"],
-        },
-        {
-          model: Product,
-          as: "product",
-          attributes: ["id", "name", "imageUrl"],
-        },
+        { model: User, as: "user", attributes: ["id", "firstName", "lastName"] },
+        { model: Product, as: "product", attributes: ["id", "name", "imageUrl"] },
       ],
       order: [["createdAt", "DESC"]],
       limit,
       offset,
     });
 
-    const reviews = rows.map(formatReviewWithProductResponse);
-
-    return paginate(reviews, count, page, limit);
+    return { items: rows.map(formatReviewWithProductResponse), totalItems: count };
   }
 
   async createReview(userId: number, data: CreateReviewInput): Promise<ReviewWithProductResponse> {
@@ -225,51 +215,28 @@ class ReviewService {
 
   async getAllReviewsAdmin(
     pagination: PaginationOptions,
-    filters?: {
-      isApproved?: boolean;
-      productId?: number;
-      rating?: number;
-    },
-  ) {
+    filters?: { isApproved?: boolean; productId?: number; rating?: number },
+  ): Promise<{ items: ReviewAdminResponse[]; totalItems: number }> {
     const { page, limit } = pagination;
     const offset = getOffset(page, limit);
 
     const where: Record<string, unknown> = {};
-
-    if (filters?.isApproved !== undefined) {
-      where.isApproved = filters.isApproved;
-    }
-
-    if (filters?.productId) {
-      where.productId = filters.productId;
-    }
-
-    if (filters?.rating) {
-      where.rating = filters.rating;
-    }
+    if (filters?.isApproved !== undefined) where.isApproved = filters.isApproved;
+    if (filters?.productId) where.productId = filters.productId;
+    if (filters?.rating) where.rating = filters.rating;
 
     const { count, rows } = await Review.findAndCountAll({
       where,
       include: [
-        {
-          model: User,
-          as: "user",
-          attributes: ["id", "firstName", "lastName", "email"],
-        },
-        {
-          model: Product,
-          as: "product",
-          attributes: ["id", "name", "imageUrl"],
-        },
+        { model: User, as: "user", attributes: ["id", "firstName", "lastName", "email"] },
+        { model: Product, as: "product", attributes: ["id", "name", "imageUrl"] },
       ],
       order: [["createdAt", "DESC"]],
       limit,
       offset,
     });
 
-    const reviews = rows.map(formatReviewAdminResponse);
-
-    return paginate(reviews, count, page, limit);
+    return { items: rows.map(formatReviewAdminResponse), totalItems: count };
   }
 
   async getReviewByIdAdmin(reviewId: number): Promise<ReviewAdminResponse> {

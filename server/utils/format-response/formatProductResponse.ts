@@ -31,6 +31,7 @@ export function formatProductListResponse(product: Product): ProductListResponse
     preparationTime: product.preparationTime,
     calories: product.calories,
     categoryId: product.categoryId,
+    imageCount: product.images ? product.images.length : 0, // ✅ تعداد عکس‌های گالری
   };
 }
 
@@ -49,6 +50,7 @@ export function formatProductDetailResponse(product: Product): ProductDetailResp
     preparationTime: product.preparationTime,
     calories: product.calories,
     categoryId: product.categoryId,
+    imageCount: product.images ? product.images.length : 0,
     ingredients: product.ingredients || [],
     gallery: product.images
       ? product.images

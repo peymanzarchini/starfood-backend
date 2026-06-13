@@ -4,18 +4,27 @@ import { HttpError } from "../utils/httpError.js";
 import { formatAddressResponse } from "../utils/format-response/formatAddressResponse.js";
 import { AddressResponse } from "../types/index.js";
 import { CreateAddressInput, UpdateAddressInput } from "../validators/schemas/address.schema.js";
+import { getOffset } from "../utils/pagination.js";
 
 class AddressService {
-  async getUserAddresses(userId: number): Promise<AddressResponse[]> {
-    const addresses = await Address.findAll({
+  async getUserAddresses(
+    userId: number,
+    page = 1,
+    limit = 100,
+  ): Promise<{ items: AddressResponse[]; totalItems: number }> {
+    const offset = getOffset(page, limit);
+
+    const { count, rows } = await Address.findAndCountAll({
       where: { userId },
       order: [
         ["isDefault", "DESC"],
         ["createdAt", "DESC"],
       ],
+      limit,
+      offset,
     });
 
-    return addresses.map(formatAddressResponse);
+    return { items: rows.map(formatAddressResponse), totalItems: count };
   }
 
   async getAddressById(addressId: number, userId: number): Promise<AddressResponse> {

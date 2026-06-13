@@ -1,10 +1,11 @@
 import { Op } from "@sequelize/core";
 import { Category, Product } from "../models/index.js";
 import { HttpError } from "../utils/httpError.js";
-import { paginate, getOffset, PaginationOptions } from "../utils/pagination.js";
+import { getOffset, PaginationOptions } from "../utils/pagination.js";
 import { CreateCategoryInput, UpdateCategoryInput } from "../validators/schemas/category.schema.js";
-import { CategoryResponse } from "../types/index.js";
+import { CategoryResponse, ProductListResponse } from "../types/index.js";
 import { formatCategoryResponse } from "../utils/format-response/formatCategoryResponse.js";
+import { formatProductListResponse } from "../utils/format-response/formatProductResponse.js";
 
 class CategoryService {
   async getActiveCategories(): Promise<CategoryResponse[]> {
@@ -16,18 +17,18 @@ class CategoryService {
     const categoriesWithCounts = await Promise.all(
       categories.map(async (category) => {
         const productCount = await Product.count({
-          where: {
-            categoryId: category.id,
-            isAvailable: true,
-          },
+          where: { categoryId: category.id, isAvailable: true },
         });
         return formatCategoryResponse(category, productCount);
-      })
+      }),
     );
+
     return categoriesWithCounts;
   }
 
-  async getAllCategories(pagination: PaginationOptions) {
+  async getAllCategories(
+    pagination: PaginationOptions,
+  ): Promise<{ items: CategoryResponse[]; totalItems: number }> {
     const { page, limit } = pagination;
     const offset = getOffset(page, limit);
 
@@ -42,9 +43,12 @@ class CategoryService {
           where: { categoryId: category.id },
         });
         return formatCategoryResponse(category, productCount);
-      })
+      }),
     );
-    return paginate(categoriesWithCounts, count, page, limit);
+    return {
+      items: categoriesWithCounts,
+      totalItems: count,
+    };
   }
 
   async getCategoryById(id: number, activeOnly: boolean = true): Promise<CategoryResponse> {
@@ -68,7 +72,10 @@ class CategoryService {
     return formatCategoryResponse(category, productCount);
   }
 
-  async getCategoryProducts(categoryId: number, pagination: PaginationOptions) {
+  async getCategoryProducts(
+    categoryId: number,
+    pagination: PaginationOptions,
+  ): Promise<{ category: CategoryResponse; items: ProductListResponse[]; totalItems: number }> {
     const { page, limit } = pagination;
     const offset = getOffset(page, limit);
 
@@ -89,23 +96,12 @@ class CategoryService {
       offset,
     });
 
-    const products = rows.map((product) => ({
-      id: product.id,
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      finalPrice: product.finalPrice,
-      discount: product.discount,
-      imageUrl: product.imageUrl,
-      isAvailable: product.isAvailable,
-      isPopular: product.isPopular,
-      preparationTime: product.preparationTime,
-      calories: product.calories,
-    }));
+    const products = rows.map(formatProductListResponse);
 
     return {
       category: formatCategoryResponse(category),
-      products: paginate(products, count, page, limit),
+      items: products,
+      totalItems: count,
     };
   }
 
@@ -182,7 +178,7 @@ class CategoryService {
 
     if (productCount > 0) {
       throw HttpError.badRequest(
-        `Cannot delete category. It has ${productCount} product(s). Please move or delete the products first.`
+        `Cannot delete category. It has ${productCount} product(s). Please move or delete the products first.`,
       );
     }
 
@@ -195,13 +191,21 @@ class CategoryService {
         id: orderedIds,
       },
     });
+
     if (categories.length !== orderedIds.length) {
       throw HttpError.badRequest("Some category IDs are invalid");
     }
+
     await Promise.all(
-      orderedIds.map((id, index) => Category.update({ displayOrder: index }, { where: { id } }))
+      orderedIds.map((id, index) => Category.update({ displayOrder: index }, { where: { id } })),
     );
-    return this.getActiveCategories();
+
+    const updatedCategories = await Category.findAll({
+      where: { id: orderedIds, isActive: true },
+      order: [["displayOrder", "ASC"]],
+    });
+
+    return updatedCategories.map((cat) => formatCategoryResponse(cat));
   }
 }
 

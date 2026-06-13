@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { reviewService } from "../services/review.service.js";
-import { normalizePagination } from "../utils/pagination.js";
+import { getPaginationMeta, normalizePagination } from "../utils/pagination.js";
 import { CreateReviewInput, UpdateReviewInput } from "../validators/schemas/review.schema.js";
 
 class ReviewController {
@@ -9,9 +9,13 @@ class ReviewController {
       const productId = parseInt(req.params.productId, 10);
       const pagination = normalizePagination(Number(req.query.page), Number(req.query.limit));
 
-      const result = await reviewService.getProductReviews(productId, pagination);
+      const { items, totalItems, stats } = await reviewService.getProductReviews(
+        productId,
+        pagination,
+      );
+      const paginationMeta = getPaginationMeta(totalItems, pagination.page, pagination.limit);
 
-      res.success("Reviews retrieved successfully", result);
+      res.success("Reviews retrieved successfully", { reviews: items, stats }, 200, paginationMeta);
     } catch (error) {
       next(error);
     }
@@ -22,9 +26,10 @@ class ReviewController {
       const userId = req.user!.id;
       const pagination = normalizePagination(Number(req.query.page), Number(req.query.limit));
 
-      const result = await reviewService.getUserReviews(userId, pagination);
+      const { items, totalItems } = await reviewService.getUserReviews(userId, pagination);
+      const paginationMeta = getPaginationMeta(totalItems, pagination.page, pagination.limit);
 
-      res.success("Reviews retrieved successfully", result);
+      res.success("Reviews retrieved successfully", items, 200, paginationMeta);
     } catch (error) {
       next(error);
     }
@@ -86,7 +91,6 @@ class ReviewController {
   async getAllReviewsAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const pagination = normalizePagination(Number(req.query.page), Number(req.query.limit));
-
       const filters = {
         isApproved:
           req.query.isApproved === "true"
@@ -98,9 +102,10 @@ class ReviewController {
         rating: req.query.rating ? Number(req.query.rating) : undefined,
       };
 
-      const result = await reviewService.getAllReviewsAdmin(pagination, filters);
+      const { items, totalItems } = await reviewService.getAllReviewsAdmin(pagination, filters);
+      const paginationMeta = getPaginationMeta(totalItems, pagination.page, pagination.limit);
 
-      res.success("Reviews retrieved successfully", result);
+      res.success("Reviews retrieved successfully", items, 200, paginationMeta);
     } catch (error) {
       next(error);
     }

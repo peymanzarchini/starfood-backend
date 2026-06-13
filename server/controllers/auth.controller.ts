@@ -52,9 +52,11 @@ class AuthController {
       const { accessToken, refreshToken: newRefreshToken } =
         await authService.refreshToken(refreshToken);
       setRefreshTokenCookie(res, newRefreshToken);
+      setAccessTokenCookie(res, accessToken);
       res.success("Token refreshed successfully", { accessToken });
     } catch (error) {
       clearRefreshTokenCookie(res);
+      clearAccessTokenCookie(res);
       next(error);
     }
   }

@@ -1,7 +1,7 @@
 import { Op } from "@sequelize/core";
 import { Product, ProductImage, Category } from "../models/index.js";
 import { HttpError } from "../utils/httpError.js";
-import { paginate, getOffset } from "../utils/pagination.js";
+import { getOffset } from "../utils/pagination.js";
 import {
   formatProductListResponse,
   formatProductDetailResponse,
@@ -16,11 +16,13 @@ import {
   CreateProductInput,
   UpdateProductInput,
   GetProductsQuery,
+  AddProductImagesInput,
+  UpdateProductImageInput,
 } from "../validators/schemas/product.schema.js";
 
 class ProductService {
   private buildWhereClause(query: GetProductsQuery, includeUnavailable = false) {
-    const where: Record<string, unknown> = {};
+    const where: Record<string | symbol, unknown> = {};
 
     if (!includeUnavailable) {
       where.isAvailable = true;
@@ -32,17 +34,28 @@ class ProductService {
       where.categoryId = query.categoryId;
     }
 
-    where.price = {
-      ...(query.minPrice !== undefined && { [Op.gte]: query.minPrice }),
-      ...(query.maxPrice !== undefined && { [Op.lte]: query.maxPrice }),
-    };
+    const hasMinPrice = query.minPrice !== undefined && query.minPrice !== null;
+    const hasMaxPrice = query.maxPrice !== undefined && query.maxPrice !== null;
+
+    if (hasMaxPrice || hasMaxPrice) {
+      const priceFilter: Record<string | symbol, unknown> = {};
+      if (hasMinPrice) {
+        priceFilter[Op.gte] = query.minPrice;
+      }
+
+      if (hasMaxPrice) {
+        priceFilter[Op.lte] = query.maxPrice;
+      }
+
+      where.price = priceFilter;
+    }
 
     if (query.isPopular !== undefined) {
       where.isPopular = query.isPopular;
     }
 
     if (query.search) {
-      where[Op.or as unknown as string] = [
+      where[Op.or] = [
         { name: { [Op.like]: `%${query.search}%` } },
         { description: { [Op.like]: `%${query.search}%` } },
       ];
@@ -69,7 +82,10 @@ class ProductService {
 
     const products = rows.map(formatProductListResponse);
 
-    return paginate(products, count, page, limit);
+    return {
+      items: products,
+      totalItems: count,
+    };
   }
 
   async getAllProductsAdmin(query: GetProductsQuery) {
@@ -89,6 +105,11 @@ class ProductService {
           as: "category",
           attributes: ["id", "name"],
         },
+        {
+          model: ProductImage,
+          as: "images",
+          attributes: ["id"], // ✅ فقط آیدی برای شمارش
+        },
       ],
       order: [[orderField, orderDirection.toUpperCase()]],
       limit,
@@ -97,7 +118,10 @@ class ProductService {
 
     const products = rows.map(formatProductListResponse);
 
-    return paginate(products, count, page, limit);
+    return {
+      items: products,
+      totalItems: count,
+    };
   }
 
   async getProductById(id: number): Promise<ProductDetailResponse> {
@@ -183,7 +207,7 @@ class ProductService {
       name: data.name,
       description: data.description,
       price: data.price,
-      imageUrl: data.imageUrl!,
+      imageUrl: data.imageUrl ?? null, // ✅ اجازه null
       categoryId: data.categoryId,
       ingredients: data.ingredients || [],
       preparationTime: data.preparationTime,
@@ -214,7 +238,7 @@ class ProductService {
       name: data.name ?? product.name,
       description: data.description ?? product.description,
       price: data.price ?? product.price,
-      imageUrl: data.imageUrl ?? product.imageUrl,
+      imageUrl: data.imageUrl !== undefined ? data.imageUrl : product.imageUrl, // ✅ اگر null فرستاد null میشه
       categoryId: data.categoryId ?? product.categoryId,
       ingredients: data.ingredients ?? product.ingredients,
       preparationTime: data.preparationTime ?? product.preparationTime,
@@ -263,10 +287,10 @@ class ProductService {
     return this.getProductByIdAdmin(id);
   }
 
-  async addProductImage(
+  async addProductImages(
     productId: number,
-    data: { url: string; thumbnailUrl?: string; altText?: string },
-  ): Promise<ProductImageResponse> {
+    data: AddProductImagesInput,
+  ): Promise<ProductImageResponse[]> {
     const product = await Product.findByPk(productId);
 
     if (!product) {
@@ -277,20 +301,29 @@ class ProductService {
       where: { productId },
     });
 
-    const image = await ProductImage.create({
-      url: data.url,
-      thumbnailUrl: data.thumbnailUrl,
-      altText: data.altText,
-      displayOrder: (maxOrder || 0) + 1,
+    const startOrder = (maxOrder || 0) + 1;
+
+    const imagesData = data.images.map((img, index) => ({
+      url: img.url,
+      thumbnailUrl: img.thumbnailUrl || null,
+      altText: img.altText || null,
+      displayOrder: startOrder + index,
       productId,
+    }));
+
+    await ProductImage.bulkCreate(imagesData);
+
+    const allImages = await ProductImage.findAll({
+      where: { productId },
+      order: [["displayOrder", "ASC"]],
     });
 
-    return formatProductImageResponse(image);
+    return allImages.map(formatProductImageResponse);
   }
 
   async updateProductImage(
     imageId: number,
-    data: { url?: string; thumbnailUrl?: string; altText?: string },
+    data: UpdateProductImageInput,
   ): Promise<ProductImageResponse> {
     const image = await ProductImage.findByPk(imageId);
 
@@ -300,8 +333,8 @@ class ProductService {
 
     await image.update({
       url: data.url ?? image.url,
-      thumbnailUrl: data.thumbnailUrl ?? image.thumbnailUrl,
-      altText: data.altText ?? image.altText,
+      thumbnailUrl: data.thumbnailUrl !== undefined ? data.thumbnailUrl : image.thumbnailUrl,
+      altText: data.altText !== undefined ? data.altText : image.altText,
     });
 
     return formatProductImageResponse(image);
@@ -347,6 +380,39 @@ class ProductService {
     });
 
     return updatedImages.map(formatProductImageResponse);
+  }
+
+  async setCoverImageFromGallery(
+    productId: number,
+    imageId: number,
+  ): Promise<ProductDetailResponse> {
+    const product = await Product.findByPk(productId);
+    if (!product) {
+      throw HttpError.notFound("Product not found");
+    }
+
+    const galleryImage = await ProductImage.findOne({
+      where: { id: imageId, productId: productId },
+    });
+
+    if (!galleryImage) {
+      throw HttpError.notFound("Image not found in this product's gallery");
+    }
+
+    await product.update({ imageUrl: galleryImage.url });
+
+    return this.getProductByIdAdmin(productId);
+  }
+
+  async removeCoverImage(productId: number): Promise<ProductDetailResponse> {
+    const product = await Product.findByPk(productId);
+    if (!product) {
+      throw HttpError.notFound("Product not found");
+    }
+
+    await product.update({ imageUrl: null });
+
+    return this.getProductByIdAdmin(productId);
   }
 }
 

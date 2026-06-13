@@ -1,10 +1,6 @@
 import { Settings } from "../models/index.js";
 import { logger } from "../config/logger.js";
 
-/**
- * Default settings for StarFood restaurant
- * All monetary values in USD
- */
 const defaultSettings = [
   {
     key: "restaurant_name",
@@ -78,10 +74,6 @@ const defaultSettings = [
   },
 ];
 
-/**
- * Seed default settings to database
- * Only inserts if setting doesn't exist
- */
 export async function seedSettings(): Promise<void> {
   try {
     logger.info("🌱 Seeding settings...");
@@ -110,9 +102,6 @@ export async function seedSettings(): Promise<void> {
   }
 }
 
-/**
- * Create default admin user
- */
 export async function seedAdminUser(): Promise<void> {
   const { User } = await import("../models/index.js");
 
@@ -132,7 +121,7 @@ export async function seedAdminUser(): Promise<void> {
       firstName: "Admin",
       lastName: "StarFood",
       email: "admin@starfood.com",
-      password: "Admin@123456", // Will be hashed by model hook
+      password: "Admin@123456",
       phoneNumber: "+15551234567",
       role: "admin",
     });
@@ -147,9 +136,6 @@ export async function seedAdminUser(): Promise<void> {
   }
 }
 
-/**
- * Create sample categories
- */
 export async function seedCategories(): Promise<void> {
   const { Category } = await import("../models/index.js");
 

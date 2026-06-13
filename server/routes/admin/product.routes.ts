@@ -5,6 +5,11 @@ import {
   createProductSchema,
   updateProductSchema,
   getProductByIdSchema,
+  addProductImagesSchema,
+  updateProductImageSchema,
+  deleteProductImageSchema,
+  setCoverImageSchema,
+  reorderProductImagesSchema,
 } from "../../validators/schemas/product.schema.js";
 
 const router = Router();
@@ -49,18 +54,38 @@ router.patch(
 
 router.post(
   "/:id/images",
-  validate(getProductByIdSchema),
-  productController.addProductImage.bind(productController),
+  validate(addProductImagesSchema),
+  productController.addProductImages.bind(productController),
 );
 
 router.put(
   "/:id/images/reorder",
-  validate(getProductByIdSchema),
+  validate(reorderProductImagesSchema),
   productController.reorderProductImages.bind(productController),
 );
 
-router.put("/images/:imageId", productController.updateProductImage.bind(productController));
+router.patch(
+  "/:id/cover/:imageId",
+  validate(setCoverImageSchema),
+  productController.setCoverImage.bind(productController),
+);
 
-router.delete("/images/:imageId", productController.deleteProductImage.bind(productController));
+router.delete(
+  "/:id/cover",
+  validate(getProductByIdSchema),
+  productController.removeCoverImage.bind(productController),
+);
+
+router.put(
+  "/images/:imageId",
+  validate(updateProductImageSchema),
+  productController.updateProductImage.bind(productController),
+);
+
+router.delete(
+  "/images/:imageId",
+  validate(deleteProductImageSchema),
+  productController.deleteProductImage.bind(productController),
+);
 
 export default router;

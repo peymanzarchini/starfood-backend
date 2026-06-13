@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { orderService } from "../services/order.service.js";
-import { normalizePagination } from "../utils/pagination.js";
+import { getPaginationMeta, normalizePagination } from "../utils/pagination.js";
 import {
   CreateOrderInput,
   UpdateOrderStatusInput,
@@ -14,9 +14,10 @@ class OrderController {
       const pagination = normalizePagination(Number(req.query.page), Number(req.query.limit));
       const status = req.query.status as OrderStatusType | undefined;
 
-      const result = await orderService.getUserOrders(userId, pagination, status);
+      const { items, totalItems } = await orderService.getUserOrders(userId, pagination, status);
+      const paginationMeta = getPaginationMeta(totalItems, pagination.page, pagination.limit);
 
-      res.success("Orders retrieved successfully", result);
+      res.success("Orders retrieved successfully", items, 200, paginationMeta);
     } catch (error) {
       next(error);
     }
@@ -72,9 +73,10 @@ class OrderController {
         search: req.query.search as string | undefined,
       };
 
-      const result = await orderService.getAllOrdersAdmin(pagination, filters);
+      const { items, totalItems } = await orderService.getAllOrdersAdmin(pagination, filters);
+      const paginationMeta = getPaginationMeta(totalItems, pagination.page, pagination.limit);
 
-      res.success("Orders retrieved successfully", result);
+      res.success("Orders retrieved successfully", items, 200, paginationMeta);
     } catch (error) {
       next(error);
     }

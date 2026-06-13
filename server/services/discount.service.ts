@@ -1,7 +1,7 @@
 import { Op } from "@sequelize/core";
 import { Discount } from "../models/index.js";
 import { HttpError } from "../utils/httpError.js";
-import { paginate, getOffset, PaginationOptions } from "../utils/pagination.js";
+import { getOffset, PaginationOptions } from "../utils/pagination.js";
 import {
   CreateDiscountInput,
   UpdateDiscountInput,
@@ -13,23 +13,14 @@ import { DiscountResponse, ValidateDiscountResponse } from "../types/index.js";
 class DiscountService {
   async getAllDiscounts(
     pagination: PaginationOptions,
-    filters?: {
-      isActive?: boolean;
-      search?: string;
-    },
-  ) {
+    filters?: { isActive?: boolean; search?: string },
+  ): Promise<{ items: DiscountResponse[]; totalItems: number }> {
     const { page, limit } = pagination;
     const offset = getOffset(page, limit);
 
     const where: Record<string, unknown> = {};
-
-    if (filters?.isActive !== undefined) {
-      where.isActive = filters.isActive;
-    }
-
-    if (filters?.search) {
-      where.code = { [Op.like]: `%${filters.search.toUpperCase()}%` };
-    }
+    if (filters?.isActive !== undefined) where.isActive = filters.isActive;
+    if (filters?.search) where.code = { [Op.like]: `%${filters.search.toUpperCase()}%` };
 
     const { count, rows } = await Discount.findAndCountAll({
       where,
@@ -38,9 +29,7 @@ class DiscountService {
       offset,
     });
 
-    const discounts = rows.map(formatDiscountResponse);
-
-    return paginate(discounts, count, page, limit);
+    return { items: rows.map(formatDiscountResponse), totalItems: count };
   }
 
   async getDiscountById(discountId: number): Promise<DiscountResponse> {

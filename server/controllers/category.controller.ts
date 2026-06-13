@@ -1,12 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { categoryService } from "../services/category.service.js";
-import { normalizePagination } from "../utils/pagination.js";
+import { getPaginationMeta, normalizePagination } from "../utils/pagination.js";
 import { CreateCategoryInput, UpdateCategoryInput } from "../validators/schemas/category.schema.js";
 
 class CategoryController {
-  async getActiveCategories(_req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getActiveCategories(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const categories = await categoryService.getActiveCategories();
+
       res.success("Categories retrieved successfully", categories);
     } catch (error) {
       next(error);
@@ -16,8 +17,11 @@ class CategoryController {
   async getAllCategories(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const pagination = normalizePagination(Number(req.query.page), Number(req.query.limit));
-      const result = await categoryService.getAllCategories(pagination);
-      res.success("Categories retrieved successfully", result);
+
+      const { items, totalItems } = await categoryService.getAllCategories(pagination);
+      const paginationMeta = getPaginationMeta(totalItems, pagination.page, pagination.limit);
+
+      res.success("Categories retrieved successfully", items, 200, paginationMeta);
     } catch (error) {
       next(error);
     }
@@ -50,9 +54,18 @@ class CategoryController {
       const categoryId = parseInt(req.params.id, 10);
       const pagination = normalizePagination(Number(req.query.page), Number(req.query.limit));
 
-      const result = await categoryService.getCategoryProducts(categoryId, pagination);
+      const { category, items, totalItems } = await categoryService.getCategoryProducts(
+        categoryId,
+        pagination,
+      );
+      const paginationMeta = getPaginationMeta(totalItems, pagination.page, pagination.limit);
 
-      res.success("Products retrieved successfully", result);
+      res.success(
+        "Products retrieved successfully",
+        { category, products: items },
+        200,
+        paginationMeta,
+      );
     } catch (error) {
       next(error);
     }
