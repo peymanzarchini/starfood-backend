@@ -5,6 +5,8 @@ import { getOrderSchema, updateOrderStatusSchema } from "../../validators/schema
 
 const router = Router();
 
+router.get("/statuses", orderController.getOrderStatuses.bind(orderController));
+
 router.get("/stats", orderController.getOrderStats.bind(orderController));
 
 router.get("/", orderController.getAllOrdersAdmin.bind(orderController));

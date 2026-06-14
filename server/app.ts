@@ -37,13 +37,12 @@ app.use(
   }),
 );
 
+app.use(responseMiddleware);
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 app.use(cookieParser());
 
 app.use("/uploads", express.static(path.join(process.cwd(), env.upload.path)));
-
-app.use(responseMiddleware);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

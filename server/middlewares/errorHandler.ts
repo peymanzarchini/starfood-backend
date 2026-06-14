@@ -18,35 +18,37 @@ export function errorHandler(err: unknown, req: Request, res: Response, next: Ne
   if (err instanceof ValidationError) {
     statusCode = 400;
     message = err.errors.map((e) => e.message).join(" | ");
-    res.fail(message, null, statusCode);
-    return;
-  }
-
-  if (err instanceof UniqueConstraintError) {
+  } else if (err instanceof UniqueConstraintError) {
     statusCode = 409;
     message = err.errors.map((e) => e.message).join(" | ");
-    res.fail(message, null, statusCode);
-    return;
-  }
-
-  if (err instanceof ForeignKeyConstraintError) {
+  } else if (err instanceof ForeignKeyConstraintError) {
     statusCode = 400;
     message = "The reference ID is invalid or does not exist.";
-    res.fail(message, null, statusCode);
-    return;
-  }
-
-  if (err instanceof DatabaseError) {
+  } else if (err instanceof DatabaseError) {
     statusCode = 503;
     message = "The database service is unavailable. Please try again later.";
+  } else if (err instanceof HttpError) {
+    statusCode = err.statusCode;
+    message = err.message;
+  } else if (typeof err === "object" && err !== null && "statusCode" in err) {
+    const expressErr = err as { statusCode?: number; message?: string };
+    statusCode = expressErr.statusCode || 500;
+    message = expressErr.message || "Internal Server Error";
+
+    if (message.includes("JSON")) {
+      message = "Invalid JSON format in request body";
+      statusCode = 400;
+    }
+  }
+
+  if (typeof res.fail === "function") {
     res.fail(message, null, statusCode);
-    return;
+  } else {
+    res.status(statusCode).json({
+      success: false,
+      message,
+      body: null,
+      status: statusCode,
+    });
   }
-
-  if (err instanceof HttpError) {
-    res.fail(err.message, null, err.statusCode);
-    return;
-  }
-
-  res.fail(message, null, statusCode);
 }
