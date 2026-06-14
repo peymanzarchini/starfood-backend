@@ -37,10 +37,7 @@ export const ordersPaths = {
                       body: {
                         type: "object",
                         properties: {
-                          items: {
-                            type: "array",
-                            items: { $ref: "#/components/schemas/Order" },
-                          },
+                          items: { type: "array", items: { $ref: "#/components/schemas/Order" } },
                           pagination: { $ref: "#/components/schemas/PaginationMeta" },
                         },
                       },
@@ -70,10 +67,7 @@ export const ordersPaths = {
               schema: {
                 allOf: [
                   { $ref: "#/components/schemas/ApiResponse" },
-                  {
-                    type: "object",
-                    properties: { body: { $ref: "#/components/schemas/Order" } },
-                  },
+                  { type: "object", properties: { body: { $ref: "#/components/schemas/Order" } } },
                 ],
               },
             },
@@ -95,10 +89,7 @@ export const ordersPaths = {
               schema: {
                 allOf: [
                   { $ref: "#/components/schemas/ApiResponse" },
-                  {
-                    type: "object",
-                    properties: { body: { $ref: "#/components/schemas/Order" } },
-                  },
+                  { type: "object", properties: { body: { $ref: "#/components/schemas/Order" } } },
                 ],
               },
             },
@@ -120,10 +111,7 @@ export const ordersPaths = {
               schema: {
                 allOf: [
                   { $ref: "#/components/schemas/ApiResponse" },
-                  {
-                    type: "object",
-                    properties: { body: { $ref: "#/components/schemas/Order" } },
-                  },
+                  { type: "object", properties: { body: { $ref: "#/components/schemas/Order" } } },
                 ],
               },
             },

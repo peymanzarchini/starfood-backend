@@ -62,6 +62,15 @@ class OrderController {
     }
   }
 
+  async getOrderStatuses(_req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const statuses = await orderService.getOrderStatuses();
+      res.success("Order statuses retrieved successfully", statuses);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getAllOrdersAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const pagination = normalizePagination(Number(req.query.page), Number(req.query.limit));
