@@ -8,6 +8,7 @@ export const authSchemas = {
       email: { type: "string", format: "email" },
       phoneNumber: { type: "string" },
       role: { type: "string", enum: ["admin", "customer"] },
+      status: { type: "string", enum: ["active", "banned"], example: "active" },
       createdAt: { type: "string", format: "date-time" },
     },
   },

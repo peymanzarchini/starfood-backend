@@ -25,6 +25,7 @@ import { discountAdminPaths } from "./paths/admin/discount.paths.js";
 import { env } from "../env.js";
 import { productSchema } from "./schemas/product.schema.js";
 import { discountSchema } from "./schemas/discount.schema.js";
+import { userAdminPaths } from "./paths/admin/user.paths.js";
 
 const options: swaggerJSDoc.Options = {
   definition: {
@@ -82,6 +83,7 @@ const options: swaggerJSDoc.Options = {
       ...reviewAdminPaths,
       ...settingsAdminPaths,
       ...discountAdminPaths,
+      ...userAdminPaths,
     },
   },
   apis: [], // Empty because we define paths manually above

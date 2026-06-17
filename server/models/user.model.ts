@@ -17,6 +17,7 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare password: string;
   declare phoneNumber: string;
   declare role: CreationOptional<"admin" | "customer">;
+  declare status: CreationOptional<"active" | "banned">;
   declare readonly createdAt: CreationOptional<Date>;
   declare readonly updatedAt: CreationOptional<Date>;
 
@@ -105,6 +106,11 @@ User.init(
       type: DataTypes.ENUM("admin", "customer"),
       allowNull: false,
       defaultValue: "customer",
+    },
+    status: {
+      type: DataTypes.ENUM("active", "banned"),
+      allowNull: false,
+      defaultValue: "active",
     },
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
