@@ -1,20 +1,9 @@
 import { z } from "zod";
 
-/**
- * Password validation regex
- * Requires: 1 uppercase, 1 lowercase, 1 number, min 8 chars
- */
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/;
 
-/**
- * Phone number validation regex
- * Supports international format
- */
 const phoneRegex = /^\+?[0-9]{10,15}$/;
 
-/**
- * Register user schema
- */
 export const registerSchema = z.object({
   body: z.object({
     firstName: z
@@ -36,7 +25,7 @@ export const registerSchema = z.object({
       .min(8, "Password must be at least 8 characters")
       .regex(
         passwordRegex,
-        "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+        "Password must contain at least one uppercase letter, one lowercase letter, and one number",
       ),
 
     phoneNumber: z
@@ -45,9 +34,6 @@ export const registerSchema = z.object({
   }),
 });
 
-/**
- * Login user schema
- */
 export const loginSchema = z.object({
   body: z.object({
     email: z.email("Invalid email format").toLowerCase().trim(),
@@ -56,9 +42,6 @@ export const loginSchema = z.object({
   }),
 });
 
-/**
- * Change password schema
- */
 export const changePasswordSchema = z.object({
   body: z
     .object({
@@ -69,7 +52,7 @@ export const changePasswordSchema = z.object({
         .min(8, "Password must be at least 8 characters")
         .regex(
           passwordRegex,
-          "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+          "Password must contain at least one uppercase letter, one lowercase letter, and one number",
         ),
 
       confirmPassword: z.string({ message: "Confirm password is required" }),
@@ -80,9 +63,6 @@ export const changePasswordSchema = z.object({
     }),
 });
 
-/**
- * Update profile schema
- */
 export const updateProfileSchema = z.object({
   body: z.object({
     firstName: z
@@ -103,7 +83,6 @@ export const updateProfileSchema = z.object({
   }),
 });
 
-// Type exports
 export type RegisterInput = z.infer<typeof registerSchema>["body"];
 export type LoginInput = z.infer<typeof loginSchema>["body"];
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>["body"];

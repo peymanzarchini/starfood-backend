@@ -1,8 +1,5 @@
 import { z } from "zod";
 
-/**
- * Add item to cart schema
- */
 export const addToCartSchema = z.object({
   body: z.object({
     productId: z
@@ -19,9 +16,6 @@ export const addToCartSchema = z.object({
   }),
 });
 
-/**
- * Update cart item schema
- */
 export const updateCartItemSchema = z.object({
   params: z.object({
     itemId: z
@@ -38,9 +32,6 @@ export const updateCartItemSchema = z.object({
   }),
 });
 
-/**
- * Remove cart item schema
- */
 export const removeCartItemSchema = z.object({
   params: z.object({
     itemId: z
@@ -50,7 +41,6 @@ export const removeCartItemSchema = z.object({
   }),
 });
 
-// Type exports
 export type AddToCartInput = z.infer<typeof addToCartSchema>["body"];
 export type UpdateCartItemInput = z.infer<typeof updateCartItemSchema>["body"];
 export type UpdateCartItemParams = z.infer<typeof updateCartItemSchema>["params"];

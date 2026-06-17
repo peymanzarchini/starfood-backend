@@ -1,14 +1,8 @@
 import { z } from "zod";
 
-/**
- * Discount type values
- */
 export const discountTypeValues = ["percentage", "fixed"] as const;
 export type DiscountType = (typeof discountTypeValues)[number];
 
-/**
- * Create discount schema (admin only)
- */
 export const createDiscountSchema = z.object({
   body: z
     .object({
@@ -72,9 +66,6 @@ export const createDiscountSchema = z.object({
     ),
 });
 
-/**
- * Update discount schema (admin only)
- */
 export const updateDiscountSchema = z.object({
   params: z.object({
     id: z
@@ -134,9 +125,6 @@ export const updateDiscountSchema = z.object({
     ),
 });
 
-/**
- * Get discount by ID schema
- */
 export const getDiscountByIdSchema = z.object({
   params: z.object({
     id: z
@@ -146,9 +134,6 @@ export const getDiscountByIdSchema = z.object({
   }),
 });
 
-/**
- * Validate discount code schema (public)
- */
 export const validateDiscountSchema = z.object({
   body: z.object({
     code: z
@@ -163,9 +148,6 @@ export const validateDiscountSchema = z.object({
   }),
 });
 
-/**
- * Get discounts list schema (admin)
- */
 export const getDiscountsSchema = z.object({
   query: z.object({
     page: z
@@ -191,7 +173,6 @@ export const getDiscountsSchema = z.object({
   }),
 });
 
-// Type exports
 export type CreateDiscountInput = z.infer<typeof createDiscountSchema>["body"];
 export type UpdateDiscountInput = z.infer<typeof updateDiscountSchema>["body"];
 export type ValidateDiscountInput = z.infer<typeof validateDiscountSchema>["body"];

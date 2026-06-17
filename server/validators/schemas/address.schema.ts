@@ -1,18 +1,9 @@
 import { z } from "zod";
 
-/**
- * Phone number regex (international format)
- */
 const phoneRegex = /^\+?[0-9]{10,15}$/;
 
-/**
- * Postal code regex
- */
 const postalCodeRegex = /^[a-zA-Z0-9\s\\-]{3,20}$/;
 
-/**
- * Create address schema
- */
 export const createAddressSchema = z.object({
   body: z.object({
     title: z
@@ -55,9 +46,6 @@ export const createAddressSchema = z.object({
   }),
 });
 
-/**
- * Update address schema
- */
 export const updateAddressSchema = z.object({
   params: z.object({
     id: z
@@ -68,9 +56,6 @@ export const updateAddressSchema = z.object({
   body: createAddressSchema.shape.body.partial(),
 });
 
-/**
- * Get address by ID schema
- */
 export const getAddressByIdSchema = z.object({
   params: z.object({
     id: z
@@ -80,7 +65,6 @@ export const getAddressByIdSchema = z.object({
   }),
 });
 
-// Type exports
 export type CreateAddressInput = z.infer<typeof createAddressSchema>["body"];
 export type UpdateAddressInput = z.infer<typeof updateAddressSchema>["body"];
 export type UpdateAddressParams = z.infer<typeof updateAddressSchema>["params"];

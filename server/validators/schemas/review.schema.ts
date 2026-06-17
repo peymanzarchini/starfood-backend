@@ -1,8 +1,5 @@
 import { z } from "zod";
 
-/**
- * Create review schema
- */
 export const createReviewSchema = z.object({
   body: z.object({
     productId: z
@@ -20,9 +17,6 @@ export const createReviewSchema = z.object({
   }),
 });
 
-/**
- * Update review schema
- */
 export const updateReviewSchema = z.object({
   params: z.object({
     id: z
@@ -42,9 +36,6 @@ export const updateReviewSchema = z.object({
   }),
 });
 
-/**
- * Approve review schema (admin only)
- */
 export const approveReviewSchema = z.object({
   params: z.object({
     id: z
@@ -57,9 +48,6 @@ export const approveReviewSchema = z.object({
   }),
 });
 
-/**
- * Get reviews schema (with filters)
- */
 export const getReviewsSchema = z.object({
   query: z.object({
     page: z
@@ -95,7 +83,6 @@ export const getReviewsSchema = z.object({
   }),
 });
 
-// Type exports
 export type CreateReviewInput = z.infer<typeof createReviewSchema>["body"];
 export type UpdateReviewInput = z.infer<typeof updateReviewSchema>["body"];
 export type ApproveReviewInput = z.infer<typeof approveReviewSchema>["body"];

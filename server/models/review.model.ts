@@ -21,7 +21,6 @@ export class Review extends Model<InferAttributes<Review>, InferCreationAttribut
   declare readonly createdAt: CreationOptional<Date>;
   declare readonly updatedAt: CreationOptional<Date>;
 
-  // Associations
   declare user?: NonAttribute<User>;
   declare product?: NonAttribute<Product>;
 }
