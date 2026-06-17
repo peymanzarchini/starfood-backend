@@ -13,6 +13,7 @@ import {
   setAccessTokenCookie,
   setRefreshTokenCookie,
 } from "../utils/cookie.js";
+import { getPaginationMeta, normalizePagination } from "../utils/pagination.js";
 
 class AuthController {
   async register(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -105,6 +106,55 @@ class AuthController {
     clearRefreshTokenCookie(res);
     clearAccessTokenCookie(res);
     res.success("Logout successful", null);
+  }
+
+  async getAllUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const pagination = normalizePagination(Number(req.query.page), Number(req.query.limit));
+      const filters = {
+        search: req.query.search as string | undefined,
+        role: req.query.role as "admin" | "customer" | undefined,
+        status: req.query.status as "active" | "banned" | undefined,
+      };
+
+      const { items, totalItems } = await authService.getAllUsers(pagination, filters);
+      const paginationMeta = getPaginationMeta(totalItems, pagination.page, pagination.limit);
+
+      res.success("User retrieved successfully", items, 200, paginationMeta);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getUserById(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const id = parseInt(req.params.id, 10);
+      const user = await authService.getUserById(id);
+      res.success("User retrieved successfully", user);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateUserRole(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const id = parseInt(req.params.id, 10);
+      const { role } = req.body;
+      const user = await authService.updateUserRole(id, role);
+      res.success("User role updated successfully", user);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async toggleUserStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const id = parseInt(req.params.id, 10);
+      const user = await authService.toggleUserStatus(id);
+      res.success("User status toggled successfully", user);
+    } catch (error) {
+      next(error);
+    }
   }
 }
 

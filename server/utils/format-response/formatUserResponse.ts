@@ -9,6 +9,7 @@ export function formatUserResponse(user: User): UserResponse {
     email: user.email,
     phoneNumber: user.phoneNumber,
     role: user.role,
+    status: user.status,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   };

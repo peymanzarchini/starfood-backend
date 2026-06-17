@@ -5,6 +5,7 @@ export interface UserResponse {
   email: string;
   phoneNumber: string;
   role: "admin" | "customer";
+  status: "active" | "banned";
   createdAt?: Date;
   updatedAt?: Date;
 }
