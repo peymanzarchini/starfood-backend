@@ -5,9 +5,6 @@ import {
   ReviewAdminResponse,
 } from "../../types/index.js";
 
-/**
- * Format review for public response
- */
 export function formatReviewResponse(review: Review): ReviewResponse {
   const user = review.user!;
 
@@ -26,9 +23,6 @@ export function formatReviewResponse(review: Review): ReviewResponse {
   };
 }
 
-/**
- * Format review with product info
- */
 export function formatReviewWithProductResponse(review: Review): ReviewWithProductResponse {
   const product = review.product!;
 
@@ -42,9 +36,6 @@ export function formatReviewWithProductResponse(review: Review): ReviewWithProdu
   };
 }
 
-/**
- * Format review for admin response (includes email)
- */
 export function formatReviewAdminResponse(review: Review): ReviewAdminResponse {
   const user = review.user!;
   const product = review.product!;

@@ -2,9 +2,6 @@ import { Cart } from "../../models/cart.model.js";
 import { CartItem } from "../../models/cartItem.model.js";
 import { CartResponse, CartItemResponse } from "../../types/index.js";
 
-/**
- * Format cart item for response
- */
 export function formatCartItemResponse(cartItem: CartItem): CartItemResponse {
   const product = cartItem.product!;
   const finalPrice =
@@ -26,9 +23,6 @@ export function formatCartItemResponse(cartItem: CartItem): CartItemResponse {
   };
 }
 
-/**
- * Format cart for response with calculations
- */
 export function formatCartResponse(cart: Cart): CartResponse {
   const items = cart.items || [];
   const formattedItems = items.map(formatCartItemResponse);
@@ -61,9 +55,6 @@ export function formatCartResponse(cart: Cart): CartResponse {
   };
 }
 
-/**
- * Create empty cart response
- */
 export function createEmptyCartResponse(): CartResponse {
   return {
     id: null,
