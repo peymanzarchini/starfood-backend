@@ -2,9 +2,6 @@
 import { Favorite } from "../../models/favorite.model.js";
 import { FavoriteResponse } from "../../types/index.js";
 
-/**
- * Format favorite for response
- */
 export function formatFavoriteResponse(favorite: Favorite): FavoriteResponse {
   const product = (favorite as any).product;
 

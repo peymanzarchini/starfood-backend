@@ -169,9 +169,6 @@ export async function seedCategories(): Promise<void> {
   }
 }
 
-/**
- * Run all seeders
- */
 export async function runSeeders(): Promise<void> {
   logger.info("🚀 Starting database seeding...");
 
@@ -183,6 +180,5 @@ export async function runSeeders(): Promise<void> {
     logger.info("🎉 Database seeding completed successfully!");
   } catch (error) {
     logger.error("❌ Database seeding failed:", error);
-    // Don't throw - allow app to continue even if seeding fails
   }
 }
